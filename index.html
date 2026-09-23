@@ -39,6 +39,18 @@ h1,h2,h3{margin:0 0 4px;}
 p{margin:0 0 8px;line-height:1.45;}
 .wrap{max-width:560px;margin:0 auto;padding-bottom:48px;}
 .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 10px;position:sticky;top:var(--safe-t);background:linear-gradient(180deg,var(--bg) 80%,transparent);z-index:5;}
+.hero{position:relative;margin:0 -16px 34px;overflow:hidden;background:linear-gradient(155deg,var(--rose) 0%,var(--lilac) 100%);}
+.hero-img{display:block;width:100%;height:min(58vw,320px);min-height:220px;object-fit:cover;object-position:50% 12%;mix-blend-mode:multiply;opacity:.94;}
+.hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,var(--bg) 96%);pointer-events:none;}
+.hero-caption{position:absolute;left:20px;bottom:34px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.25);}
+.hero-caption .eyebrow{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;font-weight:700;}
+.hero-caption .line{display:block;font-size:19px;font-weight:800;margin-top:2px;}
+.heart-badge{position:absolute;right:24px;bottom:-16px;width:50px;height:50px;filter:drop-shadow(0 4px 10px rgba(74,16,48,.28));}
+.heart-shape{position:absolute;inset:7px 7px 11px 7px;transform:rotate(-45deg);background:var(--rose-deep);}
+.heart-shape::before,.heart-shape::after{content:"";position:absolute;width:100%;height:100%;border-radius:50%;background:var(--rose-deep);}
+.heart-shape::before{top:-50%;left:0;}
+.heart-shape::after{top:0;left:50%;}
+.heart-letter{position:absolute;inset:0 0 6px 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;z-index:2;font-family:Georgia,"Times New Roman",serif;}
 .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:var(--rose-deep);}
 .brand .heart{color:var(--rose);}
 .backbtn{background:none;border:none;color:var(--rose-deep);font-size:15px;font-weight:700;padding:8px 4px;cursor:pointer;}
@@ -304,18 +316,32 @@ const PROGRAM = [
  focus:"Alles komt samen. Bij een paar oefeningen kun je letterlijk terugkijken naar week 1 en zien hoeveel sterker je bent geworden.",
  days:{
   11:[
-   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","4x12","RPE 7-8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","4x10","RPE 8","90s"],["dumbbell_bench_press","4x8","RPE 8","90s"],["dumbbell_row","4x8 / kant","RPE 8","90s"],["plank_volledig","3x40-45s","RPE 7-8","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","4x12","RPE 7-8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","4x10","RPE 8 (vergelijk je gewicht met wk1!)","90s"],["dumbbell_bench_press","4x8","RPE 8","90s"],["dumbbell_row","4x8 / kant","RPE 8","90s"],["plank_volledig","3x40-45s","RPE 7-8","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
    [["enkel_circles","2x10 / kant","-","-"],["walking_lunge_licht","3x12 / been","RPE 7-8","90s"],["romanian_deadlift_licht","4x8","RPE 8 (zwaar)","90s"],["dumbbell_shoulder_press_zit","3x10","RPE 7-8","60s"],["lat_pulldown","3x10","RPE 7-8","60s"],["side_plank","3x35s / kant","RPE 8","45s"],["calf_raises_2been","3x20 (vergelijk met wk1!)","RPE 7-8","45s"]],
    [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x10 / been","RPE 7-8","90s"],["cable_kickback","3x15","RPE 7-8","60s"],["pushup_normaal","4x12","RPE 8","60s"],["face_pull","3x15","RPE 7-8","45s"],["reverse_crunch_licht","3x15","RPE 7","45s"],["roeimachine","8 minuten","RPE 6-7","-"]]
   ],
   12:[
-   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","3x12","RPE 8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","3x10","RPE 8 (zwaar)","90s"],["dumbbell_bench_press","3x8","RPE 8","90s"],["dumbbell_row","3x8 / kant","RPE 8","90s"],["plank_volledig","3x45s","RPE 8 (versla je wk1-tijd!)","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","3x12","RPE 8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","3x10","RPE 8 (vergelijk je gewicht met wk1!)","90s"],["dumbbell_bench_press","3x8","RPE 8","90s"],["dumbbell_row","3x8 / kant","RPE 8","90s"],["plank_volledig","3x45s","RPE 8 (versla je wk1-tijd!)","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
    [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","3x12","RPE 7-8","90s"],["romanian_deadlift_licht","3x8","RPE 8 (zwaar)","90s"],["dumbbell_shoulder_press_zit","3x10","RPE 8","60s"],["lat_pulldown","3x10","RPE 8","60s"],["side_plank","3x35s / kant","RPE 8","45s"],["calf_raises_2been","3x20 (vergelijk met wk1!)","RPE 8","45s"]],
    [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x10 / been","RPE 8","90s"],["cable_kickback","3x15","RPE 7-8","60s"],["pushup_normaal","3x max (tel + vergelijk!)","RPE 9","60s"],["face_pull","3x15","RPE 7-8","45s"],["reverse_crunch_licht","3x15","RPE 7-8","45s"],["roeimachine","8 minuten, rustig uitlopen","RPE 5-6","-"]]
   ]
  }}
 ];
 const DAYLABELS = ["Dag A","Dag B","Dag C"];
+
+/* Every (block, week, day, item) slot a given exercise id appears in, so we can look up
+   "vorige keer" (last time) for that exercise anywhere in the 12 weeks, not just this slot. */
+const EX_LOCATIONS = {};
+PROGRAM.forEach(b=>{
+  b.weeks.forEach(w=>{
+    b.days[w].forEach((day,di)=>{
+      day.forEach((it,ii)=>{
+        const exId = it[0];
+        (EX_LOCATIONS[exId] = EX_LOCATIONS[exId] || []).push(slotKey(b.id,w,di,ii));
+      });
+    });
+  });
+});
 
 /* ===================== STATE ===================== */
 const LSKEY = "mybeauty_v1";
@@ -330,9 +356,24 @@ function parseSetCount(sr){
 function slotKey(blockId, week, dayIdx, itemIdx){ return blockId+"_"+week+"_"+dayIdx+"_"+itemIdx; }
 function getSets(key, n){
   if(!S.logs[key]) S.logs[key] = [];
-  while(S.logs[key].length < n) S.logs[key].push({w:"",r:"",done:false});
+  while(S.logs[key].length < n) S.logs[key].push({w:"",r:"",done:false,ts:0});
   return S.logs[key];
 }
+/* Most recently logged set for this exercise anywhere else in the program — "vorige keer". */
+function priorBest(exId, excludeKey){
+  let best = null;
+  (EX_LOCATIONS[exId] || []).forEach(k=>{
+    if(k === excludeKey) return;
+    const sets = S.logs[k];
+    if(!sets) return;
+    sets.forEach(s=>{
+      if(!s.done || !s.w) return;
+      if(!best || (s.ts||0) > (best.ts||0)) best = s;
+    });
+  });
+  return best;
+}
+function numKg(v){ const n = parseFloat((v+"").replace(",",".")); return isNaN(n) ? null : n; }
 function dayDone(blockId, week, dayIdx){
   const items = PROGRAM.find(b=>b.id===blockId).days[week][dayIdx];
   return items.every((it,i)=>{
@@ -378,6 +419,14 @@ function renderHome(){
   PROGRAM.forEach(b=>{ const p=blockProgress(b.id); totalDone+=p.done; totalAll+=p.total; });
   let html = '<div class="top"><div class="brand"><span class="heart">♥</span> My Beauty</div>'+
     '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button></div>';
+
+  html += '<div class="hero">'+
+      '<img class="hero-img" src="hero-woman.jpg" alt="">'+
+      '<div class="hero-fade"></div>'+
+      '<div class="hero-caption"><span class="eyebrow">Jouw 12 weken</span><span class="line">Sterker, met liefde</span></div>'+
+      '<div class="heart-badge"><div class="heart-shape"></div><div class="heart-letter">N</div></div>'+
+    '</div>';
+
   html += '<p class="muted">12 weken, 3x per week fullbody — voor sterke enkels, voeten, billen, buik en bovenlijf. '+totalDone+' / '+totalAll+' trainingen gelogd '+heartsFor(totalDone,totalAll)+'</p>';
 
   html += '<details class="love"><summary>💌 Een berichtje van Nico — tik om te lezen</summary>'+
@@ -438,9 +487,11 @@ function renderDay(blockId, week, dayIdx){
     const [exId, sr, rpe, rest] = it;
     const ex = EX[exId];
     const n = parseSetCount(sr);
-    const sets = getSets(slotKey(blockId,week,dayIdx,i), n);
+    const key = slotKey(blockId,week,dayIdx,i);
+    const sets = getSets(key, n);
     const done = sets.slice(0,n).every(s=>s.done);
-    const openAttr = S.note["_open_"+slotKey(blockId,week,dayIdx,i)] ? '' : ' hidden';
+    const openAttr = S.note["_open_"+key] ? '' : ' hidden';
+    const prior = priorBest(exId, key);
     html += '<div class="exitem'+(done?' done':'')+'" id="ex_'+i+'">'+
       '<div class="exhead" onclick="toggleEx('+blockId+','+week+','+dayIdx+','+i+')">'+
         '<div><div class="exname">'+(done?'💗 ':'')+ex.n+'</div><div class="exmeta">'+ex.m+' • '+ex.eq+'</div></div>'+
@@ -449,8 +500,9 @@ function renderDay(blockId, week, dayIdx){
       '<div class="exbody"'+openAttr+' id="body_'+i+'">'+
         '<h4>Zo doe je het</h4><p>'+ex.how+'</p>'+
         (ex.note?('<div class="note">💡 '+ex.note+'</div>'):'')+
+        (prior?('<div class="note">📈 Vorige keer: <strong>'+esc(prior.w)+' kg × '+esc(prior.r)+'</strong> — probeer dit te evenaren of te verslaan!</div>'):'')+
         '<h4 style="margin-top:12px;">Log je sets</h4>'+
-        setsRows(blockId,week,dayIdx,i,sets,n)+
+        setsRows(blockId,week,dayIdx,i,sets,n,prior)+
       '</div></div>';
   });
 
@@ -458,16 +510,20 @@ function renderDay(blockId, week, dayIdx){
   app.innerHTML = html;
 }
 
-function setsRows(blockId,week,dayIdx,itemIdx,sets,n){
+function setsRows(blockId,week,dayIdx,itemIdx,sets,n,prior){
   let h = "";
+  const priorKg = prior ? numKg(prior.w) : null;
   for(let s=0;s<n;s++){
     const row = sets[s];
+    const rowKg = numKg(row.w);
+    const beats = row.done && priorKg!=null && rowKg!=null && rowKg>priorKg;
     h += '<div class="setrow">'+
       '<div class="setno">'+(s+1)+'</div>'+
       '<input type="text" inputmode="decimal" placeholder="kg" value="'+esc(row.w)+'" onchange="updateSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+',\'w\',this.value)">'+
       '<input type="text" inputmode="numeric" placeholder="reps" value="'+esc(row.r)+'" onchange="updateSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+',\'r\',this.value)">'+
       '<button class="checkbtn'+(row.done?' on':'')+'" onclick="toggleSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+')">'+(row.done?'✓':'')+'</button>'+
-      '</div>';
+      '</div>'+
+      (beats?'<div class="note" style="margin-top:4px;">🔥 Sterker dan vorige keer!</div>':'');
   }
   return h;
 }
@@ -486,7 +542,9 @@ function updateSet(blockId,week,dayIdx,itemIdx,setIdx,field,val){
 }
 function toggleSet(blockId,week,dayIdx,itemIdx,setIdx){
   const k = slotKey(blockId,week,dayIdx,itemIdx);
-  S.logs[k][setIdx].done = !S.logs[k][setIdx].done;
+  const row = S.logs[k][setIdx];
+  row.done = !row.done;
+  if(row.done) row.ts = Date.now();
   save();
   renderDay(blockId,week,dayIdx);
 }
@@ -516,8 +574,12 @@ function renderInfo(){
     '<h3>Hoe werkt de app</h3><ul>'+
     '<li>Tik op een oefening voor de uitleg en een logveld per set (kg + reps).</li>'+
     '<li>Vink een set af met het rondje rechts zodra je hem gedaan hebt.</li>'+
+    '<li>Bij elke oefening zie je "Vorige keer" — het laatste gewicht/reps dat je hebt gelogd, waar dan ook in het schema. Zo zie je zwart-op-wit dat je vooruitgaat, en verschijnt er een 🔥 zodra je een set sterker maakt dan de vorige keer.</li>'+
     '<li>Alles wordt automatisch opgeslagen op dit toestel.</li>'+
-    '</ul></div>';
+    '</ul>'+
+    '<h3>Over zichtbare resultaten</h3>'+
+    '<p>Het schema is bewust opbouwend: gewicht, reps en sets gaan elk blok omhoog, zodat je spieren — inclusief je billen en je romp — steeds net iets meer te doen krijgen. Dat is wat ze sterker en strakker maakt. Hoe zichtbaar dat wordt (ook qua lichaamsvorm) hangt daarnaast sterk af van voeding en consistentie over de volle 12 weken — de app kan alleen de trainingskant regelen, de rest is aan jou en haar samen. Blijf gewoon elke keer een héél klein beetje meer proberen dan de vorige keer, dat is de kern.</p>'+
+    '</div>';
   app.innerHTML = html;
 }
 

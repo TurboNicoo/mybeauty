@@ -1,5 +1,5 @@
 const CACHE = "mybeauty-v1";
-const ASSETS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
+const ASSETS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png", "hero-woman.jpg"];
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
