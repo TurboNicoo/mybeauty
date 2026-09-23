@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HeartStrong</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#FF6F91">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FFF3F7; --bg2:#FFE3ED; --card:#FFFFFF; --card2:#FFF8FA;
+  --rose:#FF6F91; --rose-deep:#E63969; --maroon:#4A1030; --lilac:#C9A7EB; --gold:#F4B942;
+  --text:#3B2430; --muted:#93707d; --border:#FFD3E1;
+  --safe-t: env(safe-area-inset-top,0px); --safe-b: env(safe-area-inset-bottom,0px);
+  padding-top: var(--safe-t); padding-bottom: var(--safe-b);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#2A0F1E; --bg2:#3A1428; --card:#3D1729; --card2:#341321;
+    --rose:#FF7FA0; --rose-deep:#FF5580; --maroon:#F7D6E4; --lilac:#D7B9F2; --gold:#F7C863;
+    --text:#FBE4ED; --muted:#C48FA0; --border:#5A2140;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#2A0F1E; --bg2:#3A1428; --card:#3D1729; --card2:#341321;
+  --rose:#FF7FA0; --rose-deep:#FF5580; --maroon:#F7D6E4; --lilac:#D7B9F2; --gold:#F7C863;
+  --text:#FBE4ED; --muted:#C48FA0; --border:#5A2140;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:linear-gradient(180deg,var(--bg),var(--bg2) 400px);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:0 16px;min-height:100vh;}
+img{max-width:100%;}
+[hidden]{display:none!important;}
+h1,h2,h3{margin:0 0 4px;}
+p{margin:0 0 8px;line-height:1.45;}
+.wrap{max-width:560px;margin:0 auto;padding-bottom:48px;}
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 10px;position:sticky;top:var(--safe-t);background:linear-gradient(180deg,var(--bg) 80%,transparent);z-index:5;}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:var(--rose-deep);}
+.brand .heart{color:var(--rose);}
+.backbtn{background:none;border:none;color:var(--rose-deep);font-size:15px;font-weight:700;padding:8px 4px;cursor:pointer;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(230,57,105,0.06);}
+.card.soft{background:var(--card2);}
+.pill{display:inline-block;background:var(--bg2);color:var(--rose-deep);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;margin-right:6px;}
+.muted{color:var(--muted);font-size:13px;}
+.btn{display:inline-block;background:var(--rose);color:#fff;border:none;border-radius:14px;padding:12px 18px;font-weight:700;font-size:15px;cursor:pointer;text-align:center;}
+.btn.ghost{background:transparent;color:var(--rose-deep);border:2px solid var(--rose);}
+.btn.block{display:block;width:100%;}
+.btn:active{transform:scale(0.98);}
+.row{display:flex;gap:10px;align-items:center;}
+.between{justify-content:space-between;}
+.wrapcards{display:flex;flex-direction:column;gap:12px;}
+.hearts-progress{display:flex;gap:3px;}
+.hearts-progress span{font-size:14px;opacity:0.25;}
+.hearts-progress span.on{opacity:1;}
+.blockcard{cursor:pointer;position:relative;overflow:hidden;}
+.blockcard .num{position:absolute;right:14px;top:10px;font-size:44px;font-weight:900;color:var(--bg2);z-index:0;}
+.blockcard .inner{position:relative;z-index:1;}
+.blockcard .bar{height:8px;background:var(--bg2);border-radius:99px;margin-top:10px;overflow:hidden;}
+.blockcard .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--rose-deep));border-radius:99px;}
+.daybtn{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:16px;background:var(--card);border:1px solid var(--border);margin-bottom:10px;cursor:pointer;}
+.daybtn:active{background:var(--bg2);}
+.exitem{border:1px solid var(--border);border-radius:16px;padding:12px 14px;margin-bottom:10px;background:var(--card);}
+.exitem.done{background:linear-gradient(135deg,var(--card),var(--bg2));border-color:var(--rose);}
+.exhead{display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer;gap:8px;}
+.exname{font-weight:800;font-size:15.5px;}
+.exmeta{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.exscheme{text-align:right;font-size:13px;color:var(--rose-deep);font-weight:700;white-space:nowrap;}
+.exbody{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);}
+.exbody h4{margin:0 0 4px;font-size:12.5px;color:var(--rose-deep);text-transform:uppercase;letter-spacing:.03em;}
+.note{background:var(--bg2);border-left:3px solid var(--rose);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:13px;}
+.setrow{display:grid;grid-template-columns:28px 1fr 1fr 34px;gap:8px;align-items:center;margin-top:8px;}
+.setrow input{width:100%;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;}
+.setrow .setno{font-weight:800;color:var(--muted);font-size:13px;text-align:center;}
+.checkbtn{width:32px;height:32px;border-radius:50%;border:2px solid var(--rose);background:transparent;color:var(--rose);font-size:16px;cursor:pointer;}
+.checkbtn.on{background:var(--rose);color:#fff;}
+.love{background:linear-gradient(135deg,var(--rose),var(--lilac));color:#fff;border-radius:20px;padding:16px;margin-bottom:14px;}
+.love summary{cursor:pointer;font-weight:800;list-style:none;}
+.love summary::-webkit-details-marker{display:none;}
+.love p{margin-top:10px;font-size:14.5px;line-height:1.55;}
+.footer{text-align:center;color:var(--muted);font-size:12.5px;padding:20px 0 10px;}
+.taglist{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;}
+.chip{font-size:11.5px;background:var(--bg2);color:var(--rose-deep);border-radius:99px;padding:3px 9px;font-weight:700;}
+.dayhero{background:linear-gradient(135deg,var(--rose-deep),var(--rose));color:#fff;border-radius:20px;padding:18px;margin-bottom:16px;}
+.dayhero .muted{color:rgba(255,255,255,0.85);}
+.infobox{font-size:14px;line-height:1.55;}
+.infobox ul{padding-left:18px;margin:6px 0;}
+.toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-b));transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+.navdots{display:flex;gap:6px;justify-content:center;margin:6px 0 2px;}
+.navdots span{width:6px;height:6px;border-radius:50%;background:var(--border);}
+.navdots span.on{background:var(--rose);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===================== EXERCISE LIBRARY ===================== */
+const EX = {
+  enkel_circles:{n:"Enkelcirkels",m:"Enkel / kuit",eq:"Geen materiaal",
+    how:"Til één voet van de grond (zittend of staand met steun). Maak grote, langzame cirkels met je voet vanuit de enkel: 10x rechtsom, 10x linksom. Herhaal aan de andere kant.",
+    note:"Warming-up — rustig en pijnvrij, dit hoort bij elke training."},
+  tibialis_raises:{n:"Tibialis raises",m:"Scheenbeen (voorkant onderbeen)",eq:"Muur",
+    how:"Sta met je hielen tegen de muur, tenen een klein stukje van de muur af. Til je tenen zo hoog mogelijk op richting je scheenbeen, houd 1 seconde vast, laat rustig zakken.",
+    note:"Versterkt de spier aan de vóórkant van je onderbeen — samen met je kuit houdt die je enkel in balans. Heel gericht op jouw doel."},
+  calf_raises_2been:{n:"Calf raises (2 benen)",m:"Kuiten",eq:"Eigen gewicht",
+    how:"Sta rechtop, eventueel met lichte vingersteun. Kom langzaam op je tenen, knijp 1 seconde samen boven, zak gecontroleerd terug — geen wippen."},
+  calf_raises_1been_support:{n:"Calf raise op 1 been (met steun)",m:"Kuiten / enkel",eq:"Eigen gewicht",
+    how:"Zelfde beweging als de 2-benige calf raise, maar op één been, met lichte vingersteun aan een stang of muur voor balans.",
+    note:"Bouw pas hier naartoe als de 2-benige versie volledig zonder klachten voelt."},
+  eccentrische_calf_raise:{n:"Eccentrische calf raise",m:"Kuiten / enkel",eq:"Opstapje",
+    how:"Kom op 2 benen omhoog op je tenen aan de rand van een opstapje. Til dan één voet op en zak heel langzaam (4-5 tellen) op één been naar beneden.",
+    note:"Het langzame zakken is waar de winst zit — niet de snelheid."},
+  balans_1been_support:{n:"Eénbenige balans (met steun)",m:"Enkel / voet",eq:"Geen materiaal",
+    how:"Sta op één been met lichte vingersteun aan iets stevigs. Probeer 20-30 sec stabiel te staan zonder je andere voet neer te zetten.",
+    note:"Traint precies de kleine stabiliserende spieren rond je enkel die druk rond het plaatje beter helpen opvangen."},
+  balans_1been_vrij:{n:"Eénbenige balans (vrij)",m:"Enkel / voet",eq:"Geen materiaal",
+    how:"Zelfde als de ondersteunde balansoefening, maar zonder steun. Voor extra uitdaging: kijk even weg van je standbeen of sluit je ogen.",
+    note:"Alleen doen als de ondersteunde versie moeiteloos voelt. Sta in de buurt van iets om vast te pakken."},
+  enkelband_weerstand:{n:"Enkelband weerstand (in/eversie)",m:"Enkel stabilisatoren",eq:"Weerstandsband",
+    how:"Maak de band vast om een stevig punt en plaats je voet in de lus. Beweeg je voet rustig naar binnen en naar buiten tegen de weerstand in.",
+    note:"Direct gericht op de spieren die je enkel zíjwaarts stabiliseren — vaak het meest vergeten stukje na een enkelblessure."},
+  goblet_squat_box:{n:"Goblet squat naar box",m:"Bovenbenen / billen",eq:"Dumbbell + bankje",
+    how:"Houd een dumbbell verticaal tegen je borst. Zak rustig naar achteren/beneden tot je de box net raakt, kom weer omhoog.",
+    note:"De box geeft een vaste, veilige diepte — fijn om zonder zorgen op je enkel te vertrouwen."},
+  leg_press:{n:"Beenpers (leg press)",m:"Bovenbenen / billen",eq:"Legpress-machine",
+    how:"Voeten schouderbreedte op de plaat. Buig je knieën tot ongeveer 90°, druk terug tot bijna gestrekt (niet doorknallen).",
+    note:"De machine ondersteunt de beweging volledig — een fijne, enkel-veilige manier om beenkracht op te bouwen."},
+  leg_extension:{n:"Leg extension",m:"Quadriceps (voorkant bovenbeen)",eq:"Machine",
+    how:"Zit rechtop, strek je onderbenen tot bijna gestrekt, knijp kort samen boven, laat rustig zakken."},
+  leg_curl:{n:"Leg curl",m:"Hamstrings (achterkant bovenbeen)",eq:"Machine",
+    how:"Buig je onderbenen richting je billen, knijp de hamstrings samen, laat gecontroleerd terug."},
+  hip_thrust_bank:{n:"Hip thrust",m:"Billen",eq:"Bank (+ later barbell)",
+    how:"Rug tegen de bank, voeten plat op de grond. Duw je heupen omhoog tot je lichaam een rechte lijn vormt van schouders tot knieën, knijp je billen boven samen.",
+    note:"Eén van de beste bil-oefeningen die er zijn — en heel vriendelijk voor je enkel."},
+  glute_bridge:{n:"Glute bridge",m:"Billen",eq:"Eigen gewicht",
+    how:"Lig op je rug, knieën gebogen, voeten plat op de grond. Duw je heupen omhoog, knijp je billen samen boven, zak rustig terug."},
+  cable_kickback:{n:"Cable kickback",m:"Billen",eq:"Kabelmachine",
+    how:"Enkelmanchet om je enkel, sta voorovergebogen met lichte steun. Strek je been recht naar achteren, knijp de bil samen, kom rustig terug."},
+  hip_abductie_machine:{n:"Hip abductie machine",m:"Zij-bil",eq:"Machine",
+    how:"Zit rechtop, duw je knieën naar buiten tegen de weerstand in, houd kort vast, laat rustig terug."},
+  romanian_deadlift_licht:{n:"Romanian deadlift (licht)",m:"Hamstrings / billen / rug",eq:"Dumbbells",
+    how:"Lichte buiging in de knieën. Buig vanuit je heupen naar voren met een rechte rug, dumbbells dicht langs je benen, tot je een rek voelt in je hamstrings, kom weer omhoog.",
+    note:"De beweging komt uit je heup, niet uit je onderrug — rug blijft de hele tijd recht/neutraal."},
+  split_squat_stationair:{n:"Split squat (stilstaand)",m:"Bovenbenen / billen",eq:"Eigen gewicht / dumbbells",
+    how:"Grote stap naar voren, beide voeten blijven op de grond staan (geen lopen). Zak recht naar beneden tot beide knieën ~90°, kom terug omhoog.",
+    note:"In tegenstelling tot loop-uitvallen belast dit je enkel veel gecontroleerder, omdat je voeten stil blijven staan."},
+  bulgarian_split_squat:{n:"Bulgaarse split squat (met steun)",m:"Bovenbenen / billen",eq:"Bank + dumbbells",
+    how:"Achtervoet op een bank, voorvoet stevig op de grond. Zak recht naar beneden, kom terug omhoog.",
+    note:"Pak eventueel iets vast voor balans — de focus ligt op controle, niet op snelheid."},
+  step_up:{n:"Step-up",m:"Bovenbenen / billen",eq:"Box / bankje",
+    how:"Stap met één voet op de box, druk jezelf omhoog tot je er bovenop staat, stap gecontroleerd weer terug naar beneden.",
+    note:"Begin met een lage box en bouw de hoogte pas op als het pijnvrij en stabiel voelt."},
+  sumo_squat:{n:"Sumo squat",m:"Binnenbeen / billen",eq:"Dumbbell / kettlebell",
+    how:"Brede stand, tenen licht naar buiten. Zak recht naar beneden, houd je rug neutraal, kom omhoog."},
+  walking_lunge_licht:{n:"Walking lunges (licht, vlakke vloer)",m:"Bovenbenen / billen",eq:"Eigen gewicht / lichte dumbbells",
+    how:"Stap naar voren, zak tot beide knieën ~90°, druk af en stap door naar de volgende lunge.",
+    note:"Alleen op vlakke, stevige ondergrond. Stop als je enkel instabiel voelt en ga terug naar de stilstaande split squat."},
+  single_leg_rdl:{n:"Single-leg RDL",m:"Hamstrings / billen / balans",eq:"Lichte dumbbell",
+    how:"Sta op één been, buig vanuit de heup voorover terwijl je andere been naar achter zwaait voor balans, kom weer rechtop.",
+    note:"Combineert balans + enkelkracht + bilkracht in één — precies jouw doel, maar wel gevorderd. Pak iets vast zodra je wankelt."},
+  farmers_walk:{n:"Farmer's walk",m:"Hele lichaam / core / grip",eq:"Dumbbells / kettlebells",
+    how:"Pak twee stevige dumbbells, sta rechtop en loop met kleine, gecontroleerde passen een stuk (20-30m), rug recht, buik licht aangespannen.",
+    note:"Laag risico, hoge waarde: traint je hele lichaam inclusief onderbeen-stabiliteit, zonder enige impact."},
+  dumbbell_shoulder_press_zit:{n:"Zittende dumbbell shoulder press",m:"Schouders",eq:"Dumbbells + bank",
+    how:"Zit rechtop, dumbbells op schouderhoogte, druk recht omhoog tot je armen bijna gestrekt zijn, laat rustig zakken."},
+  chest_press_machine:{n:"Chest press (machine)",m:"Borst",eq:"Machine",
+    how:"Zit rechtop, handvatten op borsthoogte, druk naar voren tot je armen bijna gestrekt zijn, laat rustig terug."},
+  pushup_knie:{n:"Push-up op de knieën",m:"Borst / triceps / schouders",eq:"Eigen gewicht",
+    how:"Knieën op de grond, handen iets breder dan schouderbreedte. Zak je borst naar de grond, druk terug omhoog — lichaam recht van hoofd tot knieën."},
+  pushup_normaal:{n:"Push-up (volledig)",m:"Borst / triceps / schouders",eq:"Eigen gewicht",
+    how:"Zelfde als de knie-push-up, maar op je tenen — lichaam recht van hoofd tot hiel."},
+  dumbbell_bench_press:{n:"Dumbbell bench press",m:"Borst",eq:"Dumbbells + bank",
+    how:"Lig op de bank, dumbbells op borsthoogte, druk omhoog tot je armen bijna gestrekt zijn, laat gecontroleerd zakken."},
+  triceps_pushdown:{n:"Triceps pushdown (kabel)",m:"Triceps",eq:"Kabelmachine",
+    how:"Ellebogen dicht bij je lichaam, duw de stang/het touw naar beneden tot je armen gestrekt zijn, kom rustig terug."},
+  lateral_raise:{n:"Lateral raise",m:"Schouders (zijkant)",eq:"Lichte dumbbells",
+    how:"Til de dumbbells zijwaarts tot schouderhoogte, lichte buiging in de ellebogen, laat rustig zakken."},
+  lat_pulldown:{n:"Lat pulldown",m:"Rug / biceps",eq:"Kabelmachine",
+    how:"Grijp de stang breed vast, trek naar je bovenborst terwijl je je schouderbladen naar beneden en naar elkaar toe trekt, laat gecontroleerd terug."},
+  seated_cable_row:{n:"Seated cable row",m:"Rug / biceps",eq:"Kabelmachine",
+    how:"Rug recht, trek de handvatten naar je buik, knijp je schouderbladen samen, laat gecontroleerd terug."},
+  dumbbell_row:{n:"Dumbbell row",m:"Rug / biceps",eq:"Dumbbell + bank",
+    how:"Eén knie en hand op de bank, andere voet op de grond. Trek de dumbbell omhoog naar je heup, laat gecontroleerd zakken."},
+  face_pull:{n:"Face pull",m:"Achterste schouders / rug",eq:"Kabel of band",
+    how:"Trek het touw of de band naar je gezicht toe, ellebogen hoog, knijp je schouderbladen samen.",
+    note:"Belangrijk voor een gezonde schouderhouding — vaak een vergeten oefening, maar heel waardevol."},
+  band_pull_apart:{n:"Band pull-apart",m:"Achterste schouders / rug",eq:"Weerstandsband",
+    how:"Houd de band met gestrekte armen voor je, trek uit elkaar tot je schouderbladen samenknijpen, laat rustig terug."},
+  buikademhaling:{n:"Buikademhaling / core-activatie",m:"Diepe buikspieren",eq:"Geen materiaal",
+    how:"Lig op je rug, knieën gebogen. Adem rustig in door je neus en laat je buik bollen. Adem uit en span heel licht je onderbuik aan (alsof je een rits dichttrekt), zonder je adem vast te houden.",
+    note:"Het startpunt van elke core-oefening na buikoperaties: rustig, zonder persen. Dit is de basis, niet de zware training."},
+  dead_bug:{n:"Dead bug",m:"Diepe buikspieren",eq:"Eigen gewicht",
+    how:"Lig op je rug, armen recht omhoog, knieën 90° gebogen in de lucht. Strek afwisselend één arm en het tegenovergestelde been rustig naar de grond, zonder dat je onderrug loskomt van de grond, en breng terug.",
+    note:"Een zachte, veilige manier om je buik weer te leren aanspannen — heel geschikt na eerdere buikoperaties."},
+  bird_dog:{n:"Bird dog",m:"Core / rug-stabiliteit",eq:"Eigen gewicht",
+    how:"Op handen en knieën. Strek tegelijk één arm naar voren en het tegenovergestelde been naar achteren, houd je rug stil en recht, kom terug."},
+  pallof_press:{n:"Pallof press",m:"Zij-buik / anti-rotatie",eq:"Kabel of band",
+    how:"Sta zijwaarts naast de kabel/band, houd hem met beide handen voor je borst, druk recht naar voren zonder dat je romp meedraait, kom terug.",
+    note:"Traint je buik om stevig te blijven staan — heel functioneel en drukvriendelijk (geen bukken of persen)."},
+  plank_knie:{n:"Plank op de knieën",m:"Buik (totaal)",eq:"Eigen gewicht",
+    how:"Onderarmen en knieën op de grond, lichaam recht van hoofd tot knieën, buik licht aangespannen, adem rustig door.",
+    note:"Begin met korte periodes (15-20 sec) — kwaliteit boven duur."},
+  plank_volledig:{n:"Plank (volledig)",m:"Buik (totaal)",eq:"Eigen gewicht",
+    how:"Zelfde als de knie-plank, maar op je tenen — lichaam één rechte lijn van hoofd tot hiel."},
+  side_plank_knie:{n:"Side plank op de knieën",m:"Zij-buik",eq:"Eigen gewicht",
+    how:"Lig op je zij, steun op je onderarm en je onderknie, til je heup op tot je lichaam een rechte lijn vormt, houd vast.",
+    note:"Lichte variant — bouw pas op naar de volledige side plank als dit moeiteloos voelt."},
+  side_plank:{n:"Side plank",m:"Zij-buik",eq:"Eigen gewicht",
+    how:"Zelfde als de knie-variant, maar gestrekt op je voet in plaats van je knie."},
+  cable_woodchop_licht:{n:"Cable woodchop (licht)",m:"Schuine buikspieren",eq:"Kabelmachine",
+    how:"Kabel hoog ingesteld. Trek diagonaal van boven je schouder naar beneden over je lichaam, rustig en gecontroleerd, geen ruk-beweging.",
+    note:"Het gaat om rotatiecontrole, niet om gewicht — kies licht en beweeg langzaam."},
+  reverse_crunch_licht:{n:"Reverse crunch (licht)",m:"Onderbuik",eq:"Eigen gewicht",
+    how:"Lig op je rug, knieën gebogen boven je heupen. Til je billen heel licht van de grond door je onderbuik aan te spannen — geen zwaai met je benen.",
+    note:"Kleine, gecontroleerde beweging — niet doorzwaaien."},
+  fiets_hometrainer:{n:"Hometrainer (rustig tempo)",m:"Conditie",eq:"Hometrainer",
+    how:"Rustig, gelijkmatig tempo — je moet nog kunnen praten terwijl je fietst."},
+  roeimachine:{n:"Roeimachine (rustig tempo)",m:"Conditie / hele lichaam",eq:"Roeimachine",
+    how:"Volgorde bij het trekken: benen - rug - armen, en omgekeerd bij het terugkomen. Rustig, gelijkmatig tempo."},
+  sled_push_licht:{n:"Sled push (licht)",m:"Conditie / onderlichaam",eq:"Sled",
+    how:"Duw de slee met lichte weerstand een stuk vooruit in een gecontroleerd tempo, kleine stapjes.",
+    note:"Nul impact op je enkel — een ideaal alternatief voor hardlopen of springen."}
+};
+
+/* ===================== 12-WEKEN PROGRAMMA ===================== */
+/* item = [exerciseId, sets x reps/tijd, RPE, rust] */
+const PROGRAM = [
+{id:1,title:"Fundament & Stabiliteit",weeks:[1,2],
+ focus:"Techniek leren, je enkel en buik rustig activeren, lage belasting. Niks hoeft hier zwaar te voelen.",
+ days:{
+  1:[ // week 1
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","2x12","RPE 5-6","90s"],["glute_bridge","2x15","RPE 5-6","60s"],["pushup_knie","2x10","RPE 5-6","60s"],["seated_cable_row","2x12","RPE 5-6","60s"],["buikademhaling","2x8 ademhalingen","-","-"],["calf_raises_2been","2x15","RPE 5","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","2x12","RPE 5-6","90s"],["hip_thrust_bank","2x12","RPE 5-6","90s"],["dumbbell_shoulder_press_zit","2x12","RPE 5-6","60s"],["lat_pulldown","2x12","RPE 5-6","60s"],["dead_bug","2x8 / kant","RPE 4-5","45s"],["tibialis_raises","2x15","RPE 5","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_extension","2x12","RPE 5-6","60s"],["hip_abductie_machine","2x15","RPE 5-6","60s"],["chest_press_machine","2x12","RPE 5-6","60s"],["face_pull","2x15","RPE 5","45s"],["bird_dog","2x8 / kant","RPE 4-5","45s"],["balans_1been_support","2x20-30s / been","-","-"]]
+  ],
+  2:[ // week 2
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","3x12","RPE 6","90s"],["hip_thrust_bank","2x12","RPE 6","90s"],["pushup_knie","3x10","RPE 6","60s"],["seated_cable_row","2x12","RPE 6","60s"],["dead_bug","2x8 / kant","RPE 5","45s"],["tibialis_raises","2x15","RPE 5","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","3x12","RPE 6","90s"],["glute_bridge","2x15","RPE 6","60s"],["dumbbell_shoulder_press_zit","2x12","RPE 6","60s"],["lat_pulldown","3x12","RPE 6","60s"],["bird_dog","2x8 / kant","RPE 5","45s"],["balans_1been_support","2x30s / been","-","-"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_extension","2x12","RPE 6","60s"],["cable_kickback","2x12","RPE 6","60s"],["chest_press_machine","3x12","RPE 6","60s"],["face_pull","2x15","RPE 5","45s"],["dead_bug","2x8 / kant","RPE 5","45s"],["calf_raises_2been","2x15","RPE 5-6","45s"]]
+  ]
+ }},
+{id:2,title:"Kracht Opbouw I",weeks:[3,4],
+ focus:"Iets meer gewicht en volume. Je enkel-balans gaat voor het eerst zonder steun, en de eerste anti-rotatie buikoefening komt erbij.",
+ days:{
+  3:[
+   [["enkel_circles","2x10 / kant","-","-"],["split_squat_stationair","3x10 / been","RPE 6-7","90s"],["hip_thrust_bank","3x12","RPE 6-7","90s"],["chest_press_machine","3x12","RPE 6-7","60s"],["lat_pulldown","3x12","RPE 6-7","60s"],["dead_bug","2x10 / kant","RPE 5-6","45s"],["calf_raises_1been_support","2x12 / been","RPE 5-6","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","3x12","RPE 6-7","90s"],["cable_kickback","3x12","RPE 6-7","60s"],["dumbbell_shoulder_press_zit","3x12","RPE 6-7","60s"],["seated_cable_row","3x12","RPE 6-7","60s"],["pallof_press","2x10 / kant","RPE 5-6","45s"],["balans_1been_vrij","2x20-30s / been","-","-"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_extension","3x12","RPE 6-7","60s"],["hip_abductie_machine","3x15","RPE 6-7","60s"],["pushup_knie","3x12","RPE 6-7","60s"],["face_pull","2x15","RPE 5-6","45s"],["bird_dog","3x8 / kant","RPE 5-6","45s"],["tibialis_raises","2x15","RPE 5-6","45s"]]
+  ],
+  4:[
+   [["enkel_circles","2x10 / kant","-","-"],["split_squat_stationair","3x12 / been","RPE 7","90s"],["hip_thrust_bank","3x10","RPE 7","90s"],["chest_press_machine","3x12","RPE 7","60s"],["lat_pulldown","3x12","RPE 7","60s"],["pallof_press","2x10 / kant","RPE 6","45s"],["calf_raises_1been_support","3x12 / been","RPE 6","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","3x12","RPE 7","90s"],["cable_kickback","3x12","RPE 7","60s"],["dumbbell_shoulder_press_zit","3x12","RPE 7","60s"],["seated_cable_row","3x12","RPE 7","60s"],["dead_bug","3x8 / kant","RPE 6","45s"],["balans_1been_vrij","2x30s / been","-","-"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_extension","3x12","RPE 7","60s"],["hip_abductie_machine","3x15","RPE 7","60s"],["pushup_knie","3x15","RPE 7","60s"],["face_pull","3x15","RPE 6","45s"],["bird_dog","3x10 / kant","RPE 6","45s"],["tibialis_raises","3x15","RPE 6","45s"]]
+  ]
+ }},
+{id:3,title:"Kracht Opbouw II",weeks:[5,6],
+ focus:"Vrije gewichten komen erbij: Romanian deadlift, Bulgaarse split squat, volledige push-up en volledige plank. Nog steeds gecontroleerd, geen sprongen.",
+ days:{
+  5:[
+   [["enkel_circles","2x10 / kant","-","-"],["bulgarian_split_squat","3x8 / been","RPE 7","90s"],["romanian_deadlift_licht","3x10","RPE 7","90s"],["dumbbell_bench_press","3x10","RPE 7","90s"],["dumbbell_row","3x10 / kant","RPE 7","90s"],["plank_knie","3x20-30s","RPE 6","45s"],["eccentrische_calf_raise","3x8 / been","RPE 6-7","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","3x10","RPE 7","90s"],["hip_thrust_bank","3x10","RPE 7","90s"],["chest_press_machine","3x12","RPE 7","60s"],["lat_pulldown","3x12","RPE 7","60s"],["side_plank_knie","2x20s / kant","RPE 6","45s"],["balans_1been_vrij","3x30s / been","-","-"]],
+   [["enkel_circles","2x10 / kant","-","-"],["split_squat_stationair","3x12 / been","RPE 7","90s"],["cable_kickback","3x12","RPE 7","60s"],["pushup_normaal","3x8","RPE 7","60s"],["face_pull","3x15","RPE 6","45s"],["pallof_press","3x10 / kant","RPE 6","45s"],["tibialis_raises","3x15","RPE 6","45s"]]
+  ],
+  6:[
+   [["enkel_circles","2x10 / kant","-","-"],["bulgarian_split_squat","3x10 / been","RPE 7","90s"],["romanian_deadlift_licht","3x10","RPE 7 (zwaarder)","90s"],["dumbbell_bench_press","3x10","RPE 7 (zwaarder)","90s"],["dumbbell_row","3x10 / kant","RPE 7 (zwaarder)","90s"],["plank_volledig","3x20-30s","RPE 7","45s"],["eccentrische_calf_raise","3x10 / been","RPE 7","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","3x10","RPE 7 (zwaarder)","90s"],["hip_thrust_bank","3x10","RPE 7 (zwaarder)","90s"],["chest_press_machine","3x12","RPE 7","60s"],["lat_pulldown","3x12","RPE 7","60s"],["side_plank_knie","3x25s / kant","RPE 6-7","45s"],["balans_1been_vrij","3x30s / been (ogen dicht optioneel)","-","-"]],
+   [["enkel_circles","2x10 / kant","-","-"],["split_squat_stationair","3x12 / been","RPE 7 (zwaarder)","90s"],["cable_kickback","3x12","RPE 7","60s"],["pushup_normaal","3x10","RPE 7","60s"],["face_pull","3x15","RPE 6-7","45s"],["pallof_press","3x12 / kant","RPE 6-7","45s"],["tibialis_raises","3x15","RPE 6-7","45s"]]
+  ]
+ }},
+{id:4,title:"Volume & Kracht",weeks:[7,8],
+ focus:"Meer volume, en de zwaardere balansoefeningen (single-leg RDL, walking lunges op vlakke grond) en farmer's walk komen erbij.",
+ days:{
+  7:[
+   [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","3x10","RPE 7","90s"],["romanian_deadlift_licht","3x10","RPE 7 (zwaarder)","90s"],["dumbbell_bench_press","3x10","RPE 7","90s"],["dumbbell_row","3x10 / kant","RPE 7","90s"],["side_plank","2x20s / kant","RPE 7","45s"],["farmers_walk","2x20-30m","RPE 6-7","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["walking_lunge_licht","3x10 / been","RPE 7","90s"],["hip_thrust_bank","3x10","RPE 7 (zwaarder)","90s"],["chest_press_machine","3x12","RPE 7","60s"],["lat_pulldown","3x12","RPE 7","60s"],["cable_woodchop_licht","2x10 / kant","RPE 6","45s"],["sled_push_licht","3x15-20m","RPE 6","60s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x8 / been","RPE 6-7","90s"],["cable_kickback","3x12","RPE 7","60s"],["pushup_normaal","3x10","RPE 7","60s"],["face_pull","3x15","RPE 6-7","45s"],["reverse_crunch_licht","3x12","RPE 6","45s"],["roeimachine","5 minuten rustig","RPE 5-6","-"]]
+  ],
+  8:[
+   [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","3x12","RPE 7","90s"],["romanian_deadlift_licht","3x10","RPE 7-8 (zwaarder)","90s"],["dumbbell_bench_press","3x10","RPE 7-8 (zwaarder)","90s"],["dumbbell_row","3x10 / kant","RPE 7-8 (zwaarder)","90s"],["side_plank","3x25s / kant","RPE 7","45s"],["farmers_walk","3x20-30m","RPE 7","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["walking_lunge_licht","3x12 / been","RPE 7","90s"],["hip_thrust_bank","4x10","RPE 7-8","90s"],["chest_press_machine","3x12","RPE 7","60s"],["lat_pulldown","3x12","RPE 7","60s"],["cable_woodchop_licht","3x10 / kant","RPE 6-7","45s"],["sled_push_licht","3x20m","RPE 6-7","60s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x10 / been","RPE 7","90s"],["cable_kickback","3x15","RPE 7","60s"],["pushup_normaal","3x12","RPE 7-8","60s"],["face_pull","3x15","RPE 7","45s"],["reverse_crunch_licht","3x15","RPE 6-7","45s"],["roeimachine","6 minuten","RPE 6","-"]]
+  ]
+ }},
+{id:5,title:"Kracht & Intensiteit",weeks:[9,10],
+ focus:"Zwaarder en iets lagere reps op de hoofdoefeningen (RPE 8 = pittig, nog 2 reps in de tank). Accessoires blijven op hoge reps voor gezonde volume.",
+ days:{
+  9:[
+   [["enkel_circles","2x10 / kant","-","-"],["bulgarian_split_squat","4x8 / been","RPE 8","2 min"],["romanian_deadlift_licht","4x8","RPE 8","2 min"],["dumbbell_bench_press","4x8","RPE 8","2 min"],["dumbbell_row","4x8 / kant","RPE 8","2 min"],["plank_volledig","3x30-40s","RPE 7","45s"],["farmers_walk","3x30m","RPE 7-8 (zwaarder)","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","4x8","RPE 8 (zwaar)","2 min"],["hip_thrust_bank","4x8","RPE 8 (zwaar)","2 min"],["dumbbell_shoulder_press_zit","3x10","RPE 7-8","60s"],["lat_pulldown","3x10","RPE 7-8","60s"],["side_plank","3x30s / kant","RPE 7-8","45s"],["eccentrische_calf_raise","3x10 / been","RPE 7-8","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","4x8","RPE 8","2 min"],["cable_kickback","3x15","RPE 7","60s"],["pushup_normaal","4x max-2","RPE 8","60s"],["face_pull","3x15","RPE 7","45s"],["pallof_press","3x12 / kant","RPE 7","45s"],["balans_1been_vrij","3x30s / been (ogen dicht)","-","-"]]
+  ],
+  10:[
+   [["enkel_circles","2x10 / kant","-","-"],["bulgarian_split_squat","4x8 / been","RPE 8 (zwaarder)","2 min"],["romanian_deadlift_licht","4x8","RPE 8 (zwaarder)","2 min"],["dumbbell_bench_press","4x8","RPE 8 (zwaarder)","2 min"],["dumbbell_row","4x8 / kant","RPE 8 (zwaarder)","2 min"],["plank_volledig","3x40s","RPE 7-8","45s"],["farmers_walk","3x30m","RPE 8 (zwaarder)","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["leg_press","4x8","RPE 8 (zwaarder)","2 min"],["hip_thrust_bank","4x8","RPE 8 (zwaarder)","2 min"],["dumbbell_shoulder_press_zit","3x10","RPE 8 (zwaarder)","60s"],["lat_pulldown","3x10","RPE 8 (zwaarder)","60s"],["side_plank","3x35s / kant","RPE 8","45s"],["eccentrische_calf_raise","3x10 / been","RPE 8","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","4x10","RPE 8","2 min"],["cable_kickback","3x15","RPE 7-8","60s"],["pushup_normaal","4x max","RPE 8-9","60s"],["face_pull","3x15","RPE 7-8","45s"],["pallof_press","3x12 / kant","RPE 7-8","45s"],["balans_1been_vrij","3x30s / been","-","-"]]
+  ]
+ }},
+{id:6,title:"Piek & Vier je Progressie",weeks:[11,12],
+ focus:"Alles komt samen. Bij een paar oefeningen kun je letterlijk terugkijken naar week 1 en zien hoeveel sterker je bent geworden.",
+ days:{
+  11:[
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","4x12","RPE 7-8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","4x10","RPE 8","90s"],["dumbbell_bench_press","4x8","RPE 8","90s"],["dumbbell_row","4x8 / kant","RPE 8","90s"],["plank_volledig","3x40-45s","RPE 7-8","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["walking_lunge_licht","3x12 / been","RPE 7-8","90s"],["romanian_deadlift_licht","4x8","RPE 8 (zwaar)","90s"],["dumbbell_shoulder_press_zit","3x10","RPE 7-8","60s"],["lat_pulldown","3x10","RPE 7-8","60s"],["side_plank","3x35s / kant","RPE 8","45s"],["calf_raises_2been","3x20 (vergelijk met wk1!)","RPE 7-8","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x10 / been","RPE 7-8","90s"],["cable_kickback","3x15","RPE 7-8","60s"],["pushup_normaal","4x12","RPE 8","60s"],["face_pull","3x15","RPE 7-8","45s"],["reverse_crunch_licht","3x15","RPE 7","45s"],["roeimachine","8 minuten","RPE 6-7","-"]]
+  ],
+  12:[
+   [["enkel_circles","2x10 / kant","-","-"],["goblet_squat_box","3x12","RPE 8 (vergelijk met wk1!)","90s"],["hip_thrust_bank","3x10","RPE 8 (zwaar)","90s"],["dumbbell_bench_press","3x8","RPE 8","90s"],["dumbbell_row","3x8 / kant","RPE 8","90s"],["plank_volledig","3x45s","RPE 8 (versla je wk1-tijd!)","45s"],["farmers_walk","3x30m","RPE 8","90s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["sumo_squat","3x12","RPE 7-8","90s"],["romanian_deadlift_licht","3x8","RPE 8 (zwaar)","90s"],["dumbbell_shoulder_press_zit","3x10","RPE 8","60s"],["lat_pulldown","3x10","RPE 8","60s"],["side_plank","3x35s / kant","RPE 8","45s"],["calf_raises_2been","3x20 (vergelijk met wk1!)","RPE 8","45s"]],
+   [["enkel_circles","2x10 / kant","-","-"],["single_leg_rdl","3x10 / been","RPE 8","90s"],["cable_kickback","3x15","RPE 7-8","60s"],["pushup_normaal","3x max (tel + vergelijk!)","RPE 9","60s"],["face_pull","3x15","RPE 7-8","45s"],["reverse_crunch_licht","3x15","RPE 7-8","45s"],["roeimachine","8 minuten, rustig uitlopen","RPE 5-6","-"]]
+  ]
+ }}
+];
+const DAYLABELS = ["Dag A","Dag B","Dag C"];
+
+/* ===================== STATE ===================== */
+const LSKEY = "heartstrong_v1";
+let S = {logs:{}, note:{}};
+try{ const raw = localStorage.getItem(LSKEY); if(raw) S = JSON.parse(raw); }catch(e){}
+function save(){ try{ localStorage.setItem(LSKEY, JSON.stringify(S)); }catch(e){} }
+
+function parseSetCount(sr){
+  const m = /^(\d+)\s*x/i.exec(sr.trim());
+  return m ? Math.min(parseInt(m[1],10), 6) : 3;
+}
+function slotKey(blockId, week, dayIdx, itemIdx){ return blockId+"_"+week+"_"+dayIdx+"_"+itemIdx; }
+function getSets(key, n){
+  if(!S.logs[key]) S.logs[key] = [];
+  while(S.logs[key].length < n) S.logs[key].push({w:"",r:"",done:false});
+  return S.logs[key];
+}
+function dayDone(blockId, week, dayIdx){
+  const items = PROGRAM.find(b=>b.id===blockId).days[week][dayIdx];
+  return items.every((it,i)=>{
+    const n = parseSetCount(it[1]);
+    const sets = S.logs[slotKey(blockId,week,dayIdx,i)];
+    return sets && sets.length>=n && sets.slice(0,n).every(s=>s.done);
+  });
+}
+function blockProgress(blockId){
+  const block = PROGRAM.find(b=>b.id===blockId);
+  let total=0, done=0;
+  block.weeks.forEach(w=>{
+    block.days[w].forEach((items,di)=>{ total++; if(dayDone(blockId,w,di)) done++; });
+  });
+  return {done,total};
+}
+
+/* ===================== ROUTER ===================== */
+let ROUTE = {view:"home"};
+const app = document.getElementById("app");
+function go(route){ ROUTE = route; render(); window.scrollTo(0,0); }
+
+function render(){
+  if(ROUTE.view==="home") return renderHome();
+  if(ROUTE.view==="block") return renderBlock(ROUTE.blockId);
+  if(ROUTE.view==="day") return renderDay(ROUTE.blockId, ROUTE.week, ROUTE.dayIdx);
+  if(ROUTE.view==="info") return renderInfo();
+}
+
+function topbar(title, back){
+  return '<div class="top"><div class="brand">'+
+    (back?('<button class="backbtn" onclick="history_back()">‹ Terug</button>'):('<span class="heart">♥</span> HeartStrong'))+
+    '</div>'+(back?'':'<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button>')+'</div>'+
+    (title?('<h2 style="margin:2px 0 14px;">'+title+'</h2>'):'');
+}
+let HIST = [];
+function pushHist(){ HIST.push(JSON.stringify(ROUTE)); }
+function history_back(){ if(HIST.length){ ROUTE = JSON.parse(HIST.pop()); render(); } else { go({view:"home"}); } window.scrollTo(0,0); }
+
+function renderHome(){
+  HIST = [];
+  let totalDone=0, totalAll=0;
+  PROGRAM.forEach(b=>{ const p=blockProgress(b.id); totalDone+=p.done; totalAll+=p.total; });
+  let html = '<div class="top"><div class="brand"><span class="heart">♥</span> HeartStrong</div>'+
+    '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button></div>';
+  html += '<p class="muted">12 weken, 3x per week fullbody — voor sterke enkels, voeten, billen, buik en bovenlijf. '+totalDone+' / '+totalAll+' trainingen gelogd '+heartsFor(totalDone,totalAll)+'</p>';
+
+  html += '<details class="love"><summary>💌 Een berichtje van Nico — tik om te lezen</summary>'+
+    '<p>Dit schema heb ik speciaal voor jou gemaakt: rustig opbouwen rond je enkel, je buik weer sterk maken op jouw tempo, en tegelijk lekker aan je billen, buik en bovenlijf werken. Elke training telt, ook een kleine. Ik ben apetrots op je bij elke stap. I love you. — Nico ♥</p></details>';
+
+  html += '<div class="wrapcards">';
+  PROGRAM.forEach(b=>{
+    const p = blockProgress(b.id);
+    const pct = p.total? Math.round(100*p.done/p.total) : 0;
+    html += '<div class="card blockcard" onclick=\'go({view:"block",blockId:'+b.id+'})\'>'+
+      '<div class="num">'+b.id+'</div>'+
+      '<div class="inner">'+
+      '<div class="pill">Week '+b.weeks[0]+'-'+b.weeks[1]+'</div>'+
+      '<h3>'+b.title+'</h3>'+
+      '<p class="muted">'+b.focus+'</p>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+      '<p class="muted" style="margin-top:6px;">'+p.done+' / '+p.total+' trainingen • '+pct+'%</p>'+
+      '</div></div>';
+  });
+  html += '</div>';
+  html += '<div class="footer">Gemaakt met ❤️ door Nico &nbsp;•&nbsp; HeartStrong v1</div>';
+  app.innerHTML = html;
+}
+
+function heartsFor(done,total){
+  if(!total) return "";
+  const n = Math.min(5, Math.round(5*done/total));
+  let s = "";
+  for(let i=0;i<5;i++) s += '<span style="opacity:'+(i<n?1:0.25)+'">♥</span>';
+  return s;
+}
+
+function renderBlock(blockId){
+  pushHist();
+  const b = PROGRAM.find(x=>x.id===blockId);
+  let html = topbar(b.title, true);
+  html += '<div class="card soft"><p>'+b.focus+'</p></div>';
+  b.weeks.forEach(w=>{
+    html += '<h3 style="margin:18px 0 8px;">Week '+w+'</h3>';
+    b.days[w].forEach((items,di)=>{
+      const done = dayDone(blockId,w,di);
+      html += '<div class="daybtn" onclick=\'go({view:"day",blockId:'+blockId+',week:'+w+',dayIdx:'+di+'})\'>'+
+        '<div><strong>'+DAYLABELS[di]+'</strong><div class="muted">'+items.length+' oefeningen</div></div>'+
+        '<div style="font-size:20px;">'+(done?'💗':'🤍')+'</div></div>';
+    });
+  });
+  app.innerHTML = html;
+}
+
+function renderDay(blockId, week, dayIdx){
+  pushHist();
+  const b = PROGRAM.find(x=>x.id===blockId);
+  const items = b.days[week][dayIdx];
+  let html = topbar(null, true);
+  html += '<div class="dayhero"><div class="pill" style="background:rgba(255,255,255,.25);color:#fff;">Blok '+blockId+' • Week '+week+'</div>'+
+    '<h2 style="margin:6px 0 2px;color:#fff;">'+DAYLABELS[dayIdx]+' — Fullbody</h2>'+
+    '<p class="muted">'+items.length+' oefeningen • warm eerst rustig op</p></div>';
+
+  items.forEach((it,i)=>{
+    const [exId, sr, rpe, rest] = it;
+    const ex = EX[exId];
+    const n = parseSetCount(sr);
+    const sets = getSets(slotKey(blockId,week,dayIdx,i), n);
+    const done = sets.slice(0,n).every(s=>s.done);
+    const openAttr = S.note["_open_"+slotKey(blockId,week,dayIdx,i)] ? '' : ' hidden';
+    html += '<div class="exitem'+(done?' done':'')+'" id="ex_'+i+'">'+
+      '<div class="exhead" onclick="toggleEx('+blockId+','+week+','+dayIdx+','+i+')">'+
+        '<div><div class="exname">'+(done?'💗 ':'')+ex.n+'</div><div class="exmeta">'+ex.m+' • '+ex.eq+'</div></div>'+
+        '<div class="exscheme">'+sr+'<br><span class="muted">'+rpe+(rest!=="-"?(' • rust '+rest):'')+'</span></div>'+
+      '</div>'+
+      '<div class="exbody"'+openAttr+' id="body_'+i+'">'+
+        '<h4>Zo doe je het</h4><p>'+ex.how+'</p>'+
+        (ex.note?('<div class="note">💡 '+ex.note+'</div>'):'')+
+        '<h4 style="margin-top:12px;">Log je sets</h4>'+
+        setsRows(blockId,week,dayIdx,i,sets,n)+
+      '</div></div>';
+  });
+
+  html += '<button class="btn block" style="margin-top:14px;" onclick="finishDay('+blockId+','+week+','+dayIdx+')">Dag afronden ♥</button>';
+  app.innerHTML = html;
+}
+
+function setsRows(blockId,week,dayIdx,itemIdx,sets,n){
+  let h = "";
+  for(let s=0;s<n;s++){
+    const row = sets[s];
+    h += '<div class="setrow">'+
+      '<div class="setno">'+(s+1)+'</div>'+
+      '<input type="text" inputmode="decimal" placeholder="kg" value="'+esc(row.w)+'" onchange="updateSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+',\'w\',this.value)">'+
+      '<input type="text" inputmode="numeric" placeholder="reps" value="'+esc(row.r)+'" onchange="updateSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+',\'r\',this.value)">'+
+      '<button class="checkbtn'+(row.done?' on':'')+'" onclick="toggleSet('+blockId+','+week+','+dayIdx+','+itemIdx+','+s+')">'+(row.done?'✓':'')+'</button>'+
+      '</div>';
+  }
+  return h;
+}
+function esc(v){ return (v+"").replace(/"/g,"&quot;"); }
+
+function toggleEx(blockId,week,dayIdx,itemIdx){
+  const k = "_open_"+slotKey(blockId,week,dayIdx,itemIdx);
+  S.note[k] = !S.note[k];
+  const el = document.getElementById("body_"+itemIdx);
+  if(el) el.hidden = !S.note[k];
+}
+function updateSet(blockId,week,dayIdx,itemIdx,setIdx,field,val){
+  const k = slotKey(blockId,week,dayIdx,itemIdx);
+  S.logs[k][setIdx][field] = val;
+  save();
+}
+function toggleSet(blockId,week,dayIdx,itemIdx,setIdx){
+  const k = slotKey(blockId,week,dayIdx,itemIdx);
+  S.logs[k][setIdx].done = !S.logs[k][setIdx].done;
+  save();
+  renderDay(blockId,week,dayIdx);
+  HIST.pop();
+}
+function finishDay(blockId,week,dayIdx){
+  save();
+  showToast(dayDone(blockId,week,dayIdx) ? "Helemaal gelogd — trots op je! 💗" : "Opgeslagen — vul gerust later de rest aan 🤍");
+  go({view:"block",blockId:blockId});
+}
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+function renderInfo(){
+  pushHist();
+  let html = topbar("Info & veiligheid", true);
+  html += '<div class="card infobox">'+
+    '<h3>Voor wie is dit schema</h3>'+
+    '<p>3x per week een fullbody training, opgebouwd in 6 blokken van 2 weken (12 weken totaal). Focus op sterke enkels/voeten/onderbenen, billen, buik (rustig opgebouwd) en bovenlijf.</p>'+
+    '<h3>Belangrijk om te weten</h3><ul>'+
+    '<li>Dit schema vervangt geen medisch advies. Overleg bij twijfel met je fysiotherapeut of arts, zeker rond je enkel en je buik.</li>'+
+    '<li>Stop direct bij scherpe of aanhoudende pijn — dat is iets anders dan normale spierpijn.</li>'+
+    '<li>Kies liever een gewicht dat goed voelt dan te veel in één keer te willen — je mag altijd een stap terug doen naar een lichtere variant.</li>'+
+    '<li>De enkel- en kuitoefeningen zitten in élke training, bewust — consistentie is wat je enkel sterker maakt.</li>'+
+    '<li>De buikoefeningen bouwen rustig op: eerst ademhaling en lichte activatie, pas later plank/rotatie-oefeningen.</li>'+
+    '</ul>'+
+    '<h3>Hoe werkt de app</h3><ul>'+
+    '<li>Tik op een oefening voor de uitleg en een logveld per set (kg + reps).</li>'+
+    '<li>Vink een set af met het rondje rechts zodra je hem gedaan hebt.</li>'+
+    '<li>Alles wordt automatisch opgeslagen op dit toestel.</li>'+
+    '</ul></div>';
+  app.innerHTML = html;
+}
+
+/* ===================== INIT ===================== */
+render();
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("./sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>

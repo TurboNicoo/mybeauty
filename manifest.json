@@ -1,0 +1,17 @@
+{
+  "name": "HeartStrong",
+  "short_name": "HeartStrong",
+  "description": "12-weken krachtschema — enkel, billen, buik & bovenlijf, met liefde gemaakt",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#4A1030",
+  "theme_color": "#FF6F91",
+  "lang": "nl",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
