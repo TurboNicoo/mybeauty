@@ -412,6 +412,54 @@ function blockProgress(blockId){
   return {done,total};
 }
 
+/* ===================== WEEKRAPPORT ===================== */
+/* Monday 00:00 (local time) of the calendar week containing this timestamp. */
+function isoWeekStart(ts){
+  const d = new Date(ts);
+  const dow = (d.getDay()+6)%7; // 0=maandag
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate()-dow);
+  return d.getTime();
+}
+function fmtDay(ts){ return new Date(ts).toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit'}); }
+/* Aggregate every logged (done) set, bucketed by the calendar week it was checked off in. */
+function weekStats(){
+  const weeks = {};
+  const bucket = wk => weeks[wk] || (weeks[wk] = {sets:0, reps:0, volume:0, trainingen:0});
+  Object.keys(S.logs).forEach(slotK=>{
+    S.logs[slotK].forEach(s=>{
+      if(!s.done || !s.ts) return;
+      const wk = isoWeekStart(s.ts);
+      const b = bucket(wk);
+      b.sets++;
+      const r = parseInt(s.r,10);
+      const w = numKg(s.w);
+      if(!isNaN(r)) b.reps += r;
+      if(w!=null && !isNaN(r)) b.volume += w*r;
+    });
+  });
+  PROGRAM.forEach(b=>{
+    b.weeks.forEach(w=>{
+      b.days[w].forEach((items,di)=>{
+        if(!dayDone(b.id,w,di)) return;
+        let maxTs = 0;
+        items.forEach((it,ii)=>{
+          (S.logs[slotKey(b.id,w,di,ii)]||[]).forEach(s=>{ if(s.done && s.ts>maxTs) maxTs=s.ts; });
+        });
+        if(!maxTs) return;
+        bucket(isoWeekStart(maxTs)).trainingen++;
+      });
+    });
+  });
+  return weeks;
+}
+function lastNWeeks(n){
+  const thisWeek = isoWeekStart(Date.now());
+  const out = [];
+  for(let i=n-1;i>=0;i--) out.push(thisWeek - i*7*24*60*60*1000);
+  return out;
+}
+
 /* ===================== ROUTER ===================== */
 let ROUTE = {view:"home"};
 const app = document.getElementById("app");
@@ -422,6 +470,7 @@ function render(){
   if(ROUTE.view==="block") return renderBlock(ROUTE.blockId);
   if(ROUTE.view==="day") return renderDay(ROUTE.blockId, ROUTE.week, ROUTE.dayIdx);
   if(ROUTE.view==="info") return renderInfo();
+  if(ROUTE.view==="report") return renderReport();
 }
 
 function topbar(title, back){
@@ -439,7 +488,10 @@ function renderHome(){
   let totalDone=0, totalAll=0;
   PROGRAM.forEach(b=>{ const p=blockProgress(b.id); totalDone+=p.done; totalAll+=p.total; });
   let html = '<div class="top"><div class="brand"><span class="heart">♥</span> My Beauty</div>'+
-    '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button></div>';
+    '<div class="row" style="gap:2px;">'+
+    '<button class="backbtn" onclick="go({view:\'report\'})">📊 Rapport</button>'+
+    '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button>'+
+    '</div></div>';
 
   html += '<div class="hero">'+
       '<img class="hero-img" src="hero-woman.jpg" alt="">'+
@@ -602,6 +654,63 @@ function renderInfo(){
     '<p>Het schema is bewust opbouwend: gewicht, reps en sets gaan elk blok omhoog, zodat je spieren — inclusief je billen en je romp — steeds net iets meer te doen krijgen. Dat is wat ze sterker en strakker maakt. Hoe zichtbaar dat wordt (ook qua lichaamsvorm) hangt daarnaast sterk af van voeding en consistentie over de volle 12 weken — de app kan alleen de trainingskant regelen, de rest is aan jou en haar samen. Blijf gewoon elke keer een héél klein beetje meer proberen dan de vorige keer, dat is de kern.</p>'+
     '</div>';
   app.innerHTML = html;
+}
+
+function renderReport(){
+  const stats = weekStats();
+  const weeks6 = lastNWeeks(6);
+  const cur = stats[weeks6[5]] || {sets:0,reps:0,volume:0,trainingen:0};
+  const prev = stats[weeks6[4]] || {sets:0,reps:0,volume:0,trainingen:0};
+  const delta = (a,b)=> b===0 ? (a>0?'▲ nieuw':'') : (a>=b ? '▲ +'+Math.round(100*(a-b)/b)+'%' : '▼ '+Math.round(100*(a-b)/b)+'%');
+  const maxVol = Math.max(1, ...weeks6.map(w=>(stats[w]||{volume:0}).volume));
+  const anyData = weeks6.some(w=>stats[w]);
+
+  let html = topbar("Weekrapport", true);
+
+  if(!anyData){
+    html += '<div class="card"><p class="muted">Nog geen sets gelogd deze weken. Zodra je een dag afvinkt in het schema, verschijnt hier je rapport — trainingen, werksets en volume per week.</p></div>';
+    app.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="card soft">'+
+    '<div class="pill">Deze week — vanaf ma '+fmtDay(weeks6[5])+'</div>'+
+    '<div class="row" style="flex-wrap:wrap;gap:18px;margin-top:10px;">'+
+      reportStat('Trainingen', cur.trainingen+'', delta(cur.trainingen,prev.trainingen))+
+      reportStat('Werksets', cur.sets+'', delta(cur.sets,prev.sets))+
+      reportStat('Volume', Math.round(cur.volume)+' kg', delta(cur.volume,prev.volume))+
+    '</div>'+
+    '<p class="muted" style="margin-top:10px;">Volume = gewicht × reps opgeteld over al je afgevinkte sets — een goede graadmeter voor totale trainingsbelasting.</p>'+
+  '</div>';
+
+  html += '<h3 style="margin:18px 0 8px;">Laatste 6 weken — volume</h3><div class="card">';
+  html += '<div class="row" style="align-items:flex-end;gap:8px;height:100px;">';
+  weeks6.forEach(w=>{
+    const v = (stats[w]||{volume:0}).volume;
+    const h = Math.max(4, Math.round(78*v/maxVol));
+    html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">'+
+      '<div style="width:100%;height:'+h+'px;background:linear-gradient(180deg,var(--rose),var(--rose-deep));border-radius:6px 6px 2px 2px;"></div>'+
+      '<div class="muted" style="font-size:10.5px;">'+fmtDay(w)+'</div>'+
+    '</div>';
+  });
+  html += '</div></div>';
+
+  html += '<h3 style="margin:18px 0 8px;">Per week</h3>';
+  weeks6.slice().reverse().forEach(w=>{
+    const s = stats[w];
+    if(!s){ return; }
+    html += '<div class="daybtn" style="cursor:default;">'+
+      '<div><strong>Week van '+fmtDay(w)+'</strong><div class="muted">'+s.trainingen+' training(en) • '+s.sets+' werksets • '+s.reps+' reps</div></div>'+
+      '<div class="exscheme" style="text-align:right;">'+Math.round(s.volume)+' kg<br><span class="muted">volume</span></div>'+
+    '</div>';
+  });
+  app.innerHTML = html;
+}
+function reportStat(label, value, deltaStr){
+  return '<div><div class="muted" style="font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;">'+label+'</div>'+
+    '<div style="font-size:22px;font-weight:800;color:var(--rose-deep);">'+value+'</div>'+
+    (deltaStr?('<div class="muted" style="font-size:12px;">'+deltaStr+' vs vorige week</div>'):'')+
+  '</div>';
 }
 
 /* ===================== INIT ===================== */
