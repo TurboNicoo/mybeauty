@@ -353,7 +353,7 @@ function blockProgress(blockId){
 /* ===================== ROUTER ===================== */
 let ROUTE = {view:"home"};
 const app = document.getElementById("app");
-function go(route){ ROUTE = route; render(); window.scrollTo(0,0); }
+function go(route){ pushHist(); ROUTE = route; render(); window.scrollTo(0,0); }
 
 function render(){
   if(ROUTE.view==="home") return renderHome();
@@ -411,7 +411,6 @@ function heartsFor(done,total){
 }
 
 function renderBlock(blockId){
-  pushHist();
   const b = PROGRAM.find(x=>x.id===blockId);
   let html = topbar(b.title, true);
   html += '<div class="card soft"><p>'+b.focus+'</p></div>';
@@ -428,7 +427,6 @@ function renderBlock(blockId){
 }
 
 function renderDay(blockId, week, dayIdx){
-  pushHist();
   const b = PROGRAM.find(x=>x.id===blockId);
   const items = b.days[week][dayIdx];
   let html = topbar(null, true);
@@ -491,7 +489,6 @@ function toggleSet(blockId,week,dayIdx,itemIdx,setIdx){
   S.logs[k][setIdx].done = !S.logs[k][setIdx].done;
   save();
   renderDay(blockId,week,dayIdx);
-  HIST.pop();
 }
 function finishDay(blockId,week,dayIdx){
   save();
@@ -505,7 +502,6 @@ function showToast(msg){
 }
 
 function renderInfo(){
-  pushHist();
   let html = topbar("Info & veiligheid", true);
   html += '<div class="card infobox">'+
     '<h3>Voor wie is dit schema</h3>'+
