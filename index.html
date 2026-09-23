@@ -119,11 +119,53 @@ p{margin:0 0 8px;line-height:1.45;}
 .navdots{display:flex;gap:6px;justify-content:center;margin:6px 0 2px;}
 .navdots span{width:6px;height:6px;border-radius:50%;background:var(--border);}
 .navdots span.on{background:var(--rose);}
+.scrim{position:fixed;inset:0;background:rgba(20,6,15,0);z-index:60;transition:background .25s;}
+.scrim.show{background:rgba(20,6,15,.45);}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--card);border-radius:22px 22px 0 0;
+  padding:10px 20px calc(20px + var(--safe-b,0px));transform:translateY(100%);transition:transform .28s ease;
+  max-height:85vh;overflow-y:auto;box-shadow:0 -8px 30px rgba(0,0,0,.2);}
+.sheet.show{transform:translateY(0);}
+.sheet .grab{width:36px;height:4px;border-radius:99px;background:var(--border);margin:0 auto 14px;}
+.sheet-in h2{margin:2px 0 12px;}
+.segs{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.seg{background:var(--bg2);color:var(--rose-deep);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;cursor:pointer;}
+.seg.on{background:var(--rose);color:#fff;border-color:var(--rose);}
+.sheetfield{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.sheetfield label{font-weight:700;font-size:14px;}
+.sheetfield .fld{display:flex;align-items:center;gap:8px;}
+.sheetfield input{width:70px;text-align:right;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;}
+.sheetfield .suf{color:var(--muted);font-size:13px;min-width:36px;}
+.cardiorow{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:8px;cursor:pointer;}
+.cardiorow .lab{font-weight:700;font-size:14px;}
+.cardiorow .val{color:var(--muted);font-size:13px;}
+.abbanner{border-radius:16px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;font-weight:700;}
+.abbanner.ok{background:linear-gradient(135deg,var(--rose),var(--lilac));color:#fff;}
+.abbanner.todo{background:var(--bg2);color:var(--rose-deep);}
+.sectlabel{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px;}
+.sectlabel h3{font-size:15px;font-weight:800;margin:0;}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 8px;text-align:center;box-shadow:0 2px 8px rgba(230,57,105,.05);}
+.stat b{display:block;font-weight:800;font-size:19px;color:var(--rose-deep);font-variant-numeric:tabular-nums;}
+.stat span{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);}
+.subsec{margin:20px 0 0;border-top:1px solid var(--border);padding-top:15px;}
+.hist{display:flex;flex-direction:column;gap:6px;}
+.hrow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--muted);padding:7px 10px;background:var(--card);border-radius:10px;}
+.hrow span:first-child{color:var(--text);font-weight:600;}
+.hrow .up{color:#1f9d55;flex:none;font-weight:700;}
+.hrow .dn{color:#d64545;flex:none;font-weight:700;}
+.empty{color:var(--muted);font-size:13px;padding:6px 0;}
+.wbars{display:flex;flex-direction:column;gap:8px;}
+.wbar{display:grid;grid-template-columns:80px 1fr auto;gap:9px;align-items:center;font-size:11px;color:var(--muted);}
+.wbar .wl{color:var(--muted);white-space:nowrap;}
+.wbar .bt{height:10px;background:var(--bg2);border:1px solid var(--border);border-radius:999px;overflow:hidden;}
+.wbar .bf{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--rose-deep));border-radius:999px;}
+.wbar .bv{color:var(--text);font-weight:700;white-space:nowrap;}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
+<div id="sheetHost"></div>
 <div class="splash" id="splash">
   <div class="splashname"><span class="sw1">My</span> <span class="sw2">Beauty</span></div>
   <img src="hero-woman.jpg" alt="">
@@ -257,7 +299,16 @@ const EX = {
     how:"Volgorde bij het trekken: benen - rug - armen, en omgekeerd bij het terugkomen. Rustig, gelijkmatig tempo."},
   sled_push_licht:{n:"Sled push (licht)",m:"Conditie / onderlichaam",eq:"Sled",
     how:"Duw de slee met lichte weerstand een stuk vooruit in een gecontroleerd tempo, kleine stapjes.",
-    note:"Nul impact op je enkel — een ideaal alternatief voor hardlopen of springen."}
+    note:"Nul impact op je enkel — een ideaal alternatief voor hardlopen of springen."},
+  cat_cow:{n:"Kat-koe",m:"Rug & buik — mobiliteit",eq:"Geen materiaal",
+    how:"Op handen en knieën. Rond je rug bol (kin naar je borst, bekken achterover kantelen), adem uit. Laat daarna je buik zakken en kijk licht omhoog (bekken voorover kantelen), adem in. Rustig en vloeiend, geen ruk-bewegingen.",
+    note:"Zachte opwarmer voor je romp — fijn om elk buik-kwartier mee te beginnen."},
+  heel_slides:{n:"Heel slides",m:"Onderbuik",eq:"Geen materiaal",
+    how:"Lig op je rug, knieën gebogen, voeten plat op de grond. Schuif één hiel langzaam over de grond naar voren tot het been bijna gestrekt is, zonder dat je onderrug of bekken meebeweegt. Schuif terug en wissel been.",
+    note:"Eén van de zachtste, meest gebruikte oefeningen in buik-revalidatie na een operatie — puur controle, geen kracht nodig."},
+  standing_march:{n:"Staande marcheerpas",m:"Onderbuik & heupstabiliteit",eq:"Geen materiaal",
+    how:"Sta rechtop, buik licht aangespannen. Til om beurten één knie op tot heuphoogte zonder naar achteren te leunen of je bekken te laten kantelen, zet rustig weer neer en wissel.",
+    note:"Traint je buik in een staande, functionele houding — ook fijn te combineren met je balansoefeningen voor je enkel."}
 };
 
 /* ===================== 12-WEKEN PROGRAMMA ===================== */
@@ -350,6 +401,49 @@ const PROGRAM = [
 ];
 const DAYLABELS = ["Dag A","Dag B","Dag C"];
 
+/* ===================== BUIKSPIEREN-KWARTIER ===================== */
+/* Vast dagelijks ~15-min buikblok, los van het 12-weken schema — wisselt elke 2 dagen
+   tussen 3 varianten, net als bij MuscleScreamer. Oefeningen zijn bewust rustig/opbouwend
+   (geen ab wheel / hangende leg raises / gewogen sit-ups) omdat dit een dagelijkse gewoonte
+   is, niet gebonden aan de blok-progressie van het hoofdschema. item = [exId, sets x reps, rust] */
+const AB_VARIANT_NAMES = ["Ademhaling & diepe buik","Stabiliteit & balans","Controle & rotatie"];
+const AB_VARIANTS = [
+  [["buikademhaling","3x8 ademhalingen","-"],["dead_bug","3x8 / kant","30s"],["heel_slides","3x8 / been","30s"],["cat_cow","2x10","-"]],
+  [["bird_dog","3x8 / kant","30s"],["pallof_press","3x10 / kant","30s"],["side_plank_knie","3x20-25s / kant","30s"],["standing_march","3x10 / been","30s"]],
+  [["plank_knie","3x25-30s","30s"],["cable_woodchop_licht","3x10 / kant","30s"],["reverse_crunch_licht","3x12","30s"],["plank_volledig","3x20-25s","30s"]]
+];
+function todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function localEpochDay(){ const d=new Date(); return Math.floor(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/86400000); }
+function abVariantIndex(){ return Math.floor(localEpochDay()/2) % AB_VARIANTS.length; }
+function abRoutineToday(){ return AB_VARIANTS[abVariantIndex()]; }
+function abSetCount(item){ const m=/^(\d+)\s*x/i.exec(item[1].trim()); return m?Math.min(parseInt(m[1],10),6):3; }
+function abHist(exId){ return S.abLog[exId] || []; }
+function abLastEntry(exId){ const h=abHist(exId).filter(e=>e.day!==todayKey()); return h.length?h[h.length-1]:null; }
+function abTodayEntry(exId){
+  const h = S.abLog[exId] || (S.abLog[exId]=[]);
+  let e = h.find(x=>x.day===todayKey());
+  if(!e){ e = {day:todayKey(), ts:0, sets:[]}; h.push(e); }
+  return e;
+}
+function abDoneTodayFor(exId){
+  const h = abHist(exId);
+  const today = h.find(x=>x.day===todayKey());
+  return !!(today && today.sets && today.sets.length && today.sets.some(s=>s.w!==""||s.r!==""));
+}
+function abProgress(){
+  const today = abRoutineToday();
+  let done = 0;
+  today.forEach(it=>{ if(abDoneTodayFor(it[0])) done++; });
+  return {done, total:today.length, complete: done===today.length};
+}
+
+/* ===================== CARDIO ===================== */
+const CARDIO_TYPES = ["Fietsen","Lopen","Hardlopen","Crosstrainer"];
+function cardioSpeedLabel(type){ return (type==="Fietsen"||type==="Crosstrainer") ? "Stand" : "Snelheid"; }
+function cardioSpeedSuffix(type){ return (type==="Fietsen"||type==="Crosstrainer") ? "" : "km/u"; }
+function cardioHasIncline(type){ return type==="Lopen"||type==="Hardlopen"; }
+function dayKeyOf(blockId,week,dayIdx){ return blockId+"_"+week+"_"+dayIdx; }
+
 /* Every (block, week, day, item) slot a given exercise id appears in, so we can look up
    "vorige keer" (last time) for that exercise anywhere in the 12 weeks, not just this slot. */
 const EX_LOCATIONS = {};
@@ -366,8 +460,10 @@ PROGRAM.forEach(b=>{
 
 /* ===================== STATE ===================== */
 const LSKEY = "mybeauty_v1";
-let S = {logs:{}, note:{}};
+let S = {logs:{}, note:{}, abLog:{}, dayCardio:{}};
 try{ const raw = localStorage.getItem(LSKEY); if(raw) S = JSON.parse(raw); }catch(e){}
+S.abLog = S.abLog || {};
+S.dayCardio = S.dayCardio || {};
 function save(){ try{ localStorage.setItem(LSKEY, JSON.stringify(S)); }catch(e){} }
 
 function parseSetCount(sr){
@@ -413,51 +509,75 @@ function blockProgress(blockId){
 }
 
 /* ===================== WEEKRAPPORT ===================== */
-/* Monday 00:00 (local time) of the calendar week containing this timestamp. */
-function isoWeekStart(ts){
-  const d = new Date(ts);
-  const dow = (d.getDay()+6)%7; // 0=maandag
+/* Monday 00:00 (local time), off=0 this week, 1=vorige week, ... — same convention as MuscleScreamer. */
+function weekStart(off){
+  const n = new Date();
+  const d = new Date(n);
+  d.setDate(n.getDate() - ((n.getDay()+6)%7) - 7*off);
   d.setHours(0,0,0,0);
-  d.setDate(d.getDate()-dow);
-  return d.getTime();
+  return d;
 }
-function fmtDay(ts){ return new Date(ts).toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit'}); }
-/* Aggregate every logged (done) set, bucketed by the calendar week it was checked off in. */
-function weekStats(){
-  const weeks = {};
-  const bucket = wk => weeks[wk] || (weeks[wk] = {sets:0, reps:0, volume:0, trainingen:0});
-  Object.keys(S.logs).forEach(slotK=>{
-    S.logs[slotK].forEach(s=>{
-      if(!s.done || !s.ts) return;
-      const wk = isoWeekStart(s.ts);
-      const b = bucket(wk);
-      b.sets++;
-      const r = parseInt(s.r,10);
-      const w = numKg(s.w);
-      if(!isNaN(r)) b.reps += r;
-      if(w!=null && !isNaN(r)) b.volume += w*r;
-    });
+function fmtRange(off){
+  const s = weekStart(off), e = new Date(s); e.setDate(s.getDate()+6);
+  const m = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+  return s.getDate()+" "+m[s.getMonth()]+" – "+e.getDate()+" "+m[e.getMonth()];
+}
+function allCardioEntries(){
+  const out = [];
+  Object.values(S.dayCardio||{}).forEach(slots=>{
+    if(slots.pre) out.push(slots.pre);
+    if(slots.post) out.push(slots.post);
   });
+  return out;
+}
+/* Stats for one calendar week, plus per-exercise ▲/▼ vs. the most recent session before that week. */
+function weekStatsOff(off){
+  const lo = weekStart(off).getTime(), hi = lo + 7*24*60*60*1000;
+  const inWk = t => t>=lo && t<hi;
+  const workouts = new Set();
+  let sets=0, reps=0, volume=0, prs=0, drops=0;
+  const moves = [];
   PROGRAM.forEach(b=>{
     b.weeks.forEach(w=>{
       b.days[w].forEach((items,di)=>{
-        if(!dayDone(b.id,w,di)) return;
-        let maxTs = 0;
         items.forEach((it,ii)=>{
-          (S.logs[slotKey(b.id,w,di,ii)]||[]).forEach(s=>{ if(s.done && s.ts>maxTs) maxTs=s.ts; });
+          const exId = it[0];
+          const k = slotKey(b.id,w,di,ii);
+          const allSets = S.logs[k];
+          if(!allSets) return;
+          const cur = allSets.filter(s=>s.done && inWk(s.ts||0));
+          if(!cur.length) return;
+          workouts.add(b.id+"_"+w+"_"+di);
+          cur.forEach(s=>{
+            const r = parseInt(s.r,10), wt = numKg(s.w);
+            if(!isNaN(r)){ sets++; reps+=r; if(wt!=null) volume += wt*r; }
+          });
+          const prior = [];
+          (EX_LOCATIONS[exId]||[]).forEach(k2=>{
+            (S.logs[k2]||[]).forEach(s=>{ if(s.done && (s.ts||0) < lo) prior.push(s); });
+          });
+          if(!prior.length) return;
+          prior.sort((a,b2)=>(a.ts||0)-(b2.ts||0));
+          const prev = prior[prior.length-1];
+          const pb = numKg(prev.w)||0, nb = Math.max(0,...cur.map(s=>numKg(s.w)||0));
+          const pr = parseInt(prev.r,10)||0, nr = Math.max(0,...cur.map(s=>parseInt(s.r,10)||0));
+          if(nb>pb){ prs++; moves.push({n:EX[exId].n, t:pb+' → '+nb+' kg', up:1}); }
+          else if(nb===pb && nr>pr){ prs++; moves.push({n:EX[exId].n, t:pr+' → '+nr+' reps @ '+nb+' kg', up:1}); }
+          else if(nb<pb){ drops++; moves.push({n:EX[exId].n, t:pb+' → '+nb+' kg', up:0}); }
         });
-        if(!maxTs) return;
-        bucket(isoWeekStart(maxTs)).trainingen++;
       });
     });
   });
-  return weeks;
+  const cw = allCardioEntries().filter(c=>inWk(c.ts||0));
+  return {workouts:workouts.size, sets, reps, volume:Math.round(volume), prs, drops, moves,
+    cardioN:cw.length, cardioMin:cw.reduce((a,c)=>a+(+c.min||0),0)};
 }
-function lastNWeeks(n){
-  const thisWeek = isoWeekStart(Date.now());
-  const out = [];
-  for(let i=n-1;i>=0;i--) out.push(thisWeek - i*7*24*60*60*1000);
-  return out;
+/* Simple advice: exercises whose weight/reps went up this week vs. everything else logged this week. */
+function weekAdvice(off){
+  const wk = weekStatsOff(off);
+  const up = wk.moves.filter(m=>m.up).slice(0,8);
+  const hold = wk.moves.filter(m=>!m.up).slice(0,8);
+  return {up, hold};
 }
 
 /* ===================== ROUTER ===================== */
@@ -471,6 +591,20 @@ function render(){
   if(ROUTE.view==="day") return renderDay(ROUTE.blockId, ROUTE.week, ROUTE.dayIdx);
   if(ROUTE.view==="info") return renderInfo();
   if(ROUTE.view==="report") return renderReport();
+  if(ROUTE.view==="abs") return renderAbs();
+}
+/* Most recently logged (block,week,day) anywhere, so the home screen can offer "Ga verder". */
+function mostRecentDay(){
+  let best = null;
+  Object.keys(S.logs).forEach(k=>{
+    S.logs[k].forEach(s=>{
+      if(s.done && s.ts && (!best || s.ts>best.ts)){
+        const [bid,w,di] = k.split("_").map(Number);
+        best = {ts:s.ts, blockId:bid, week:w, dayIdx:di};
+      }
+    });
+  });
+  return best;
 }
 
 function topbar(title, back){
@@ -489,6 +623,7 @@ function renderHome(){
   PROGRAM.forEach(b=>{ const p=blockProgress(b.id); totalDone+=p.done; totalAll+=p.total; });
   let html = '<div class="top"><div class="brand"><span class="heart">♥</span> My Beauty</div>'+
     '<div class="row" style="gap:2px;">'+
+    '<button class="backbtn" onclick="go({view:\'abs\'})">🔥 Buik</button>'+
     '<button class="backbtn" onclick="go({view:\'report\'})">📊 Rapport</button>'+
     '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button>'+
     '</div></div>';
@@ -501,6 +636,19 @@ function renderHome(){
     '</div>';
 
   html += '<p class="muted">12 weken, 3x per week fullbody — voor sterke enkels, voeten, billen, buik en bovenlijf. '+totalDone+' / '+totalAll+' trainingen gelogd '+heartsFor(totalDone,totalAll)+'</p>';
+
+  const recent = mostRecentDay();
+  const cont = recent
+    ? {blockId:recent.blockId, week:recent.week, dayIdx:recent.dayIdx, label:'Ga verder waar je gebleven was'}
+    : {blockId:1, week:1, dayIdx:0, label:'Begin hier — je eerste training'};
+  const contDone = dayDone(cont.blockId, cont.week, cont.dayIdx);
+  html += '<div class="card blockcard" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));border:0;cursor:pointer;" '+
+    'onclick=\'go({view:"day",blockId:'+cont.blockId+',week:'+cont.week+',dayIdx:'+cont.dayIdx+'})\'>'+
+    '<div class="inner">'+
+    '<div class="pill" style="background:rgba(255,255,255,.25);color:#fff;">'+(contDone?'Net afgerond':'Volgende training')+'</div>'+
+    '<h3 style="color:#fff;">'+cont.label+'</h3>'+
+    '<p style="color:rgba(255,255,255,.9);margin:2px 0 0;">Blok '+cont.blockId+' · Week '+cont.week+' · '+DAYLABELS[cont.dayIdx]+' →</p>'+
+    '</div></div>';
 
   html += '<details class="love"><summary>💌 Een berichtje van Nico — tik om te lezen</summary>'+
     '<p>Dit schema heb ik speciaal voor jou gemaakt: rustig opbouwen rond je enkel, je buik weer sterk maken op jouw tempo, en tegelijk lekker aan je billen, buik en bovenlijf werken. Elke training telt, ook een kleine. Ik ben apetrots op je bij elke stap. I love you. — Nico ♥</p></details>';
@@ -579,8 +727,28 @@ function renderDay(blockId, week, dayIdx){
       '</div></div>';
   });
 
+  const dk = dayKeyOf(blockId,week,dayIdx);
+  const dc = S.dayCardio[dk] || {};
+  html += '<h3 style="margin:20px 0 8px;">Cardio</h3>';
+  html += cardioRowHtml(dk,'pre','Cardio voor de training', dc.pre);
+  html += cardioRowHtml(dk,'post','Cardio na de training', dc.post);
+
   html += '<button class="btn block" style="margin-top:14px;" onclick="finishDay('+blockId+','+week+','+dayIdx+')">Dag afronden ♥</button>';
   app.innerHTML = html;
+}
+function cardioRowHtml(dk, slot, label, entry){
+  const txt = entry ? (entry.type+' · '+entry.min+' min'+(entry.hr?' · '+entry.hr+' bpm':'')) : 'nog niet gelogd';
+  return '<div class="cardiorow" onclick="openDayCardio(\''+dk+'\',\''+slot+'\')"><span class="lab">'+label+'</span><span class="val">'+esc(txt)+'</span></div>';
+}
+function openDayCardio(dk, slot){
+  const entry = (S.dayCardio[dk]||{})[slot];
+  openCardio({
+    eyebrow: slot==='pre' ? 'Cardio voor de training' : 'Cardio na de training',
+    heading: 'Sessie loggen',
+    initial: entry || {},
+    onSave: (e)=>{ S.dayCardio[dk] = S.dayCardio[dk] || {}; S.dayCardio[dk][slot] = e; },
+    onDelete: entry ? (()=>{ if(S.dayCardio[dk]) delete S.dayCardio[dk][slot]; }) : null
+  });
 }
 
 function setsRows(blockId,week,dayIdx,itemIdx,sets,n,prior){
@@ -632,6 +800,133 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove("show"), 2200);
 }
 
+/* ===================== CARDIO SHEET ===================== */
+/* Bottom-sheet cardio logger — same fields/required-fields as MuscleScreamer's cardio sheet. */
+let sheetState = {};
+function closeSheet(){
+  const host = document.getElementById("sheetHost");
+  const sc = host.querySelector(".scrim"), sh = host.querySelector(".sheet");
+  if(sc) sc.classList.remove("show");
+  if(sh) sh.classList.remove("show");
+  setTimeout(()=>{ host.innerHTML=""; }, 220);
+}
+function openCardio(cfg){
+  cfg = cfg || {};
+  const init = cfg.initial || {};
+  sheetState = {cardio:{type:init.type||"Fietsen", min:init.min!=null?init.min:"", hr:init.hr||"",
+    speed:init.speed!=null?init.speed:"", incline:init.incline!=null?init.incline:"", note:init.note||""}, cardioCfg:cfg};
+  const host = document.getElementById("sheetHost");
+  host.innerHTML = '<div class="scrim" id="scrim"></div><div class="sheet" id="sheet"><div class="grab"></div><div class="sheet-in" id="sheetIn"></div></div>';
+  document.getElementById("scrim").onclick = closeSheet;
+  requestAnimationFrame(()=>{
+    document.getElementById("scrim").classList.add("show");
+    document.getElementById("sheet").classList.add("show");
+  });
+  drawCardio();
+}
+function drawCardio(){
+  const c = sheetState.cardio, cfg = sheetState.cardioCfg||{};
+  const inr = document.getElementById("sheetIn");
+  let h = '<div class="pill">'+(cfg.eyebrow||'Cardio')+'</div><h2>'+(cfg.heading||'Sessie loggen')+'</h2>';
+  h += '<div class="segs">';
+  CARDIO_TYPES.forEach(t=> h += '<button class="seg'+(c.type===t?' on':'')+'" onclick="setCardioType(\''+t+'\')">'+t+'</button>');
+  h += '</div>';
+  h += cardioField('Minuten', c.min, 'cmin', 'min');
+  h += cardioField('Hartslag', c.hr, 'chr', 'bpm');
+  h += cardioField(cardioSpeedLabel(c.type), c.speed, 'cspeed', cardioSpeedSuffix(c.type));
+  if(cardioHasIncline(c.type)) h += cardioField('Helling (optioneel)', c.incline, 'cincline', '%');
+  h += '<textarea class="namein" id="cnote" rows="2" placeholder="notitie (hoe het voelde…)" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;">'+esc(c.note)+'</textarea>';
+  h += '<button class="btn block" id="cardioSaveBtn" style="margin-top:12px;">Opslaan</button>';
+  if(cfg.onDelete) h += '<button class="btn ghost block" id="cardioDelBtn" style="margin-top:8px;">Verwijderen</button>';
+  inr.innerHTML = h;
+  const bindField = (id,prop)=>{ const el = document.getElementById(id); if(el) el.onchange = ()=>{ c[prop] = el.value; }; };
+  bindField('cmin','min'); bindField('chr','hr'); bindField('cspeed','speed'); bindField('cincline','incline');
+  document.getElementById('cnote').oninput = e=>{ c.note = e.target.value; };
+  document.getElementById('cardioSaveBtn').onclick = saveCardio;
+  if(cfg.onDelete) document.getElementById('cardioDelBtn').onclick = ()=>{ cfg.onDelete(); save(); closeSheet(); render(); showToast('Verwijderd.'); };
+}
+function cardioField(label, val, id, suf){
+  return '<div class="sheetfield"><label>'+label+'</label><div class="fld"><input type="text" inputmode="decimal" id="'+id+'" value="'+esc(val)+'"><span class="suf">'+suf+'</span></div></div>';
+}
+function setCardioType(t){ sheetState.cardio.type = t; drawCardio(); }
+function saveCardio(){
+  const c = sheetState.cardio, cfg = sheetState.cardioCfg||{};
+  const missing = [];
+  if(c.min==="" || c.min==null) missing.push('minuten');
+  if(c.hr==="" || c.hr==null) missing.push('hartslag');
+  if(c.speed==="" || c.speed==null) missing.push(cardioSpeedLabel(c.type).toLowerCase());
+  if(missing.length){ showToast('Vul ook in: '+missing.join(', ')); return; }
+  const entry = {date:new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'short'}), ts:Date.now(),
+    type:c.type, min:c.min||0, hr:c.hr||'', speed:c.speed||'',
+    incline:(cardioHasIncline(c.type)&&c.incline!==""&&c.incline!=null)?c.incline:'', note:c.note||''};
+  if(cfg.onSave) cfg.onSave(entry);
+  save(); closeSheet(); render(); showToast('Cardio gelogd 💗');
+}
+
+/* ===================== BUIKSPIEREN-KWARTIER VIEW ===================== */
+function renderAbs(){
+  const today = abRoutineToday();
+  const p = abProgress();
+  let html = topbar('Buikspieren-kwartier', true);
+  html += '<div class="abbanner '+(p.complete?'ok':'todo')+'">'+
+    (p.complete ? '✓ Buikspieren-kwartier compleet voor vandaag!' : 'Nog niet compleet: '+(p.total-p.done)+' van de '+p.total+' oefeningen.')+
+  '</div>';
+  html += '<p class="muted">Vandaag: <strong>'+AB_VARIANT_NAMES[abVariantIndex()]+'</strong> — wisselt elke 2 dagen</p>';
+  html += '<p class="muted" style="margin-bottom:16px;">Vast dagelijks blokje van circa 15 minuten, los van je 12-weken schema — maar wel elke dag. Bouw rustig op in reps/tijd en wissel zelf de intensiteit af.</p>';
+
+  today.forEach((it,i)=>{
+    const [exId, sr, rest] = it;
+    const ex = EX[exId];
+    const n = abSetCount(it);
+    const doneToday = abDoneTodayFor(exId);
+    const openAttr = S.note['_openab_'+exId] ? '' : ' hidden';
+    html += '<div class="exitem'+(doneToday?' done':'')+'" id="abex_'+i+'">'+
+      '<div class="exhead" onclick="toggleAbEx(\''+exId+'\')">'+
+        '<div><div class="exname">'+(doneToday?'💗 ':'')+ex.n+'</div><div class="exmeta">'+ex.m+' • '+ex.eq+'</div></div>'+
+        '<div class="exscheme">'+sr+(rest!=='-'?('<br><span class="muted">rust '+rest+'</span>'):'')+'</div>'+
+      '</div>'+
+      '<div class="exbody"'+openAttr+' id="abbody_'+i+'">'+
+        '<h4>Zo doe je het</h4><p>'+ex.how+'</p>'+
+        (ex.note?('<div class="note">💡 '+ex.note+'</div>'):'')+
+        '<h4 style="margin-top:12px;">Log vandaag</h4>'+
+        abSetsRows(exId,n)+
+      '</div></div>';
+  });
+  app.innerHTML = html;
+}
+function abSetsRows(exId, n){
+  const today = abTodayEntry(exId);
+  const last = abLastEntry(exId);
+  while(today.sets.length < n) today.sets.push({w:'', r:''});
+  let h = '';
+  for(let s=0;s<n;s++){
+    const row = today.sets[s];
+    const lastTxt = last && last.sets[s] ? (esc(last.sets[s].w)+' kg × '+esc(last.sets[s].r)) : '';
+    h += '<div class="setrow">'+
+      '<div class="setno">'+(s+1)+'</div>'+
+      '<input type="text" inputmode="decimal" placeholder="'+(lastTxt?esc(last.sets[s].w)+' kg':'kg')+'" value="'+esc(row.w)+'" onchange="updateAbSet(\''+exId+'\','+s+',\'w\',this.value)">'+
+      '<input type="text" inputmode="numeric" placeholder="'+(lastTxt?esc(last.sets[s].r):'reps')+'" value="'+esc(row.r)+'" onchange="updateAbSet(\''+exId+'\','+s+',\'r\',this.value)">'+
+      '<div></div>'+
+      '</div>';
+  }
+  if(last) h += '<p class="muted" style="margin-top:6px;">Vorige keer ('+last.day+'): '+last.sets.map(s=>esc(s.w)+'×'+esc(s.r)).join(', ')+'</p>';
+  return h;
+}
+function toggleAbEx(exId){
+  const k = '_openab_'+exId;
+  S.note[k] = !S.note[k];
+  const idx = abRoutineToday().findIndex(it=>it[0]===exId);
+  const el = document.getElementById('abbody_'+idx);
+  if(el) el.hidden = !S.note[k];
+}
+function updateAbSet(exId, setIdx, field, val){
+  const e = abTodayEntry(exId);
+  e.sets[setIdx][field] = val;
+  e.ts = Date.now();
+  save();
+  renderAbs();
+}
+
 function renderInfo(){
   let html = topbar("Info & veiligheid", true);
   html += '<div class="card infobox">'+
@@ -657,60 +952,61 @@ function renderInfo(){
 }
 
 function renderReport(){
-  const stats = weekStats();
-  const weeks6 = lastNWeeks(6);
-  const cur = stats[weeks6[5]] || {sets:0,reps:0,volume:0,trainingen:0};
-  const prev = stats[weeks6[4]] || {sets:0,reps:0,volume:0,trainingen:0};
-  const delta = (a,b)=> b===0 ? (a>0?'▲ nieuw':'') : (a>=b ? '▲ +'+Math.round(100*(a-b)/b)+'%' : '▼ '+Math.round(100*(a-b)/b)+'%');
-  const maxVol = Math.max(1, ...weeks6.map(w=>(stats[w]||{volume:0}).volume));
-  const anyData = weeks6.some(w=>stats[w]);
-
+  const wk = weekStatsOff(0);
   let html = topbar("Weekrapport", true);
 
-  if(!anyData){
-    html += '<div class="card"><p class="muted">Nog geen sets gelogd deze weken. Zodra je een dag afvinkt in het schema, verschijnt hier je rapport — trainingen, werksets en volume per week.</p></div>';
-    app.innerHTML = html;
-    return;
+  html += sectLabel('Deze week', fmtRange(0));
+  html += '<div class="statgrid">'+
+    statTile(wk.workouts,'trainingen')+statTile(wk.sets,'werksets')+statTile(wk.reps,'herhalingen')+
+    statTile(wk.volume.toLocaleString('nl-NL'),'kg volume')+statTile(wk.prs,'nieuwe records')+
+    statTile(wk.workouts?Math.round(wk.sets/wk.workouts):0,'sets/training')+
+    statTile(wk.cardioN,'cardio-sessies')+statTile(wk.cardioMin,'cardio-minuten')+
+  '</div>';
+
+  const adv = weekAdvice(0);
+  html += sectLabel('Advies voor komende week', (adv.up.length+adv.hold.length)+' items');
+  if(!adv.up.length && !adv.hold.length){
+    html += '<div class="empty">Log deze week een paar oefeningen om hier gericht advies te zien.</div>';
+  } else {
+    if(adv.up.length){
+      html += '<div class="subsec" style="margin-top:0;border-top:0;padding-top:0;"><span class="pill">Klaar om te verzwaren</span><div class="hist" style="margin-top:8px;">';
+      adv.up.forEach(m=> html += '<div class="hrow"><span>'+esc(m.n)+'</span><span class="up">▲ '+esc(m.t)+'</span></div>');
+      html += '</div></div>';
+    }
+    if(adv.hold.length){
+      html += '<div class="subsec"><span class="pill">Focus op vorm & herhalingen</span><div class="hist" style="margin-top:8px;">';
+      adv.hold.forEach(m=> html += '<div class="hrow"><span>'+esc(m.n)+'</span><span>'+esc(m.t)+'</span></div>');
+      html += '</div></div>';
+    }
   }
 
-  html += '<div class="card soft">'+
-    '<div class="pill">Deze week — vanaf ma '+fmtDay(weeks6[5])+'</div>'+
-    '<div class="row" style="flex-wrap:wrap;gap:18px;margin-top:10px;">'+
-      reportStat('Trainingen', cur.trainingen+'', delta(cur.trainingen,prev.trainingen))+
-      reportStat('Werksets', cur.sets+'', delta(cur.sets,prev.sets))+
-      reportStat('Volume', Math.round(cur.volume)+' kg', delta(cur.volume,prev.volume))+
-    '</div>'+
-    '<p class="muted" style="margin-top:10px;">Volume = gewicht × reps opgeteld over al je afgevinkte sets — een goede graadmeter voor totale trainingsbelasting.</p>'+
-  '</div>';
+  html += sectLabel('Progressie t.o.v. vorige keer', wk.prs+'▲ '+wk.drops+'▼');
+  if(!wk.moves.length){
+    html += '<div class="empty">Nog niets om te vergelijken deze week. Log je sets; volgende week zie je hier je progressie.</div>';
+  } else {
+    html += '<div class="hist">';
+    wk.moves.slice(0,40).forEach(m=> html += '<div class="hrow"><span>'+esc(m.n)+'</span><span class="'+(m.up?'up':'dn')+'">'+(m.up?'▲':'▼')+' '+esc(m.t)+'</span></div>');
+    html += '</div>';
+  }
 
-  html += '<h3 style="margin:18px 0 8px;">Laatste 6 weken — volume</h3><div class="card">';
-  html += '<div class="row" style="align-items:flex-end;gap:8px;height:100px;">';
-  weeks6.forEach(w=>{
-    const v = (stats[w]||{volume:0}).volume;
-    const h = Math.max(4, Math.round(78*v/maxVol));
-    html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">'+
-      '<div style="width:100%;height:'+h+'px;background:linear-gradient(180deg,var(--rose),var(--rose-deep));border-radius:6px 6px 2px 2px;"></div>'+
-      '<div class="muted" style="font-size:10.5px;">'+fmtDay(w)+'</div>'+
-    '</div>';
+  html += sectLabel('Laatste 6 weken', 'volume · trainingen');
+  const wks = [0,1,2,3,4,5].map(o=>({o, ...weekStatsOff(o)}));
+  const mx = Math.max(1, ...wks.map(w=>w.volume));
+  html += '<div class="wbars">';
+  wks.forEach(w=>{
+    html += '<div class="wbar"><span class="wl">'+fmtRange(w.o)+'</span>'+
+      '<span class="bt"><span class="bf" style="width:'+Math.round(100*w.volume/mx)+'%"></span></span>'+
+      '<span class="bv">'+(w.volume?Math.round(w.volume/1000*10)/10+'k':'–')+' · '+w.workouts+'×</span></div>';
   });
-  html += '</div></div>';
+  html += '</div>';
 
-  html += '<h3 style="margin:18px 0 8px;">Per week</h3>';
-  weeks6.slice().reverse().forEach(w=>{
-    const s = stats[w];
-    if(!s){ return; }
-    html += '<div class="daybtn" style="cursor:default;">'+
-      '<div><strong>Week van '+fmtDay(w)+'</strong><div class="muted">'+s.trainingen+' training(en) • '+s.sets+' werksets • '+s.reps+' reps</div></div>'+
-      '<div class="exscheme" style="text-align:right;">'+Math.round(s.volume)+' kg<br><span class="muted">volume</span></div>'+
-    '</div>';
-  });
   app.innerHTML = html;
 }
-function reportStat(label, value, deltaStr){
-  return '<div><div class="muted" style="font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;">'+label+'</div>'+
-    '<div style="font-size:22px;font-weight:800;color:var(--rose-deep);">'+value+'</div>'+
-    (deltaStr?('<div class="muted" style="font-size:12px;">'+deltaStr+' vs vorige week</div>'):'')+
-  '</div>';
+function sectLabel(title, eyebrow){
+  return '<div class="sectlabel"><h3>'+title+'</h3><span class="pill">'+eyebrow+'</span></div>';
+}
+function statTile(value, label){
+  return '<div class="stat"><b>'+value+'</b><span>'+label+'</span></div>';
 }
 
 /* ===================== INIT ===================== */
