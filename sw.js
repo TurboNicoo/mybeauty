@@ -1,4 +1,4 @@
-const CACHE = "heartstrong-v1";
+const CACHE = "mybeauty-v1";
 const ASSETS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
 self.addEventListener("install", (e) => {

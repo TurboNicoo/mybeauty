@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HeartStrong</title>
+<title>My Beauty</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#FF6F91">
@@ -318,7 +318,7 @@ const PROGRAM = [
 const DAYLABELS = ["Dag A","Dag B","Dag C"];
 
 /* ===================== STATE ===================== */
-const LSKEY = "heartstrong_v1";
+const LSKEY = "mybeauty_v1";
 let S = {logs:{}, note:{}};
 try{ const raw = localStorage.getItem(LSKEY); if(raw) S = JSON.parse(raw); }catch(e){}
 function save(){ try{ localStorage.setItem(LSKEY, JSON.stringify(S)); }catch(e){} }
@@ -364,7 +364,7 @@ function render(){
 
 function topbar(title, back){
   return '<div class="top"><div class="brand">'+
-    (back?('<button class="backbtn" onclick="history_back()">‹ Terug</button>'):('<span class="heart">♥</span> HeartStrong'))+
+    (back?('<button class="backbtn" onclick="history_back()">‹ Terug</button>'):('<span class="heart">♥</span> My Beauty'))+
     '</div>'+(back?'':'<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button>')+'</div>'+
     (title?('<h2 style="margin:2px 0 14px;">'+title+'</h2>'):'');
 }
@@ -376,7 +376,7 @@ function renderHome(){
   HIST = [];
   let totalDone=0, totalAll=0;
   PROGRAM.forEach(b=>{ const p=blockProgress(b.id); totalDone+=p.done; totalAll+=p.total; });
-  let html = '<div class="top"><div class="brand"><span class="heart">♥</span> HeartStrong</div>'+
+  let html = '<div class="top"><div class="brand"><span class="heart">♥</span> My Beauty</div>'+
     '<button class="backbtn" onclick="go({view:\'info\'})">ℹ️ Info</button></div>';
   html += '<p class="muted">12 weken, 3x per week fullbody — voor sterke enkels, voeten, billen, buik en bovenlijf. '+totalDone+' / '+totalAll+' trainingen gelogd '+heartsFor(totalDone,totalAll)+'</p>';
 
@@ -398,7 +398,7 @@ function renderHome(){
       '</div></div>';
   });
   html += '</div>';
-  html += '<div class="footer">Gemaakt met ❤️ door Nico &nbsp;•&nbsp; HeartStrong v1</div>';
+  html += '<div class="footer">Gemaakt met ❤️ door Nico &nbsp;•&nbsp; My Beauty v1</div>';
   app.innerHTML = html;
 }
 
